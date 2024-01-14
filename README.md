@@ -1,4 +1,4 @@
-# QA_app_new
+# Manually Annotate Physiological Data using MATLAB GUI
 
 This is a quality assessment app developed initially for visualizing and manually assessing the quality of physiological data for the NKI Rockland dataset. It requires first plotting out the physiological signals in a visually assessiable form and organizing png files corresponding to each subject. Then, the user can launch the app and use the sorting buttons and comment box to generate a single csv result file that includes the classification results for each subject(i.e. plot). The details on how to set up the app is listed below. 
 
