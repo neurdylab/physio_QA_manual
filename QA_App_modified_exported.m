@@ -3,50 +3,75 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         UIFigure                        matlab.ui.Figure
-        AddcommentButton                matlab.ui.control.Button
-        InputSubjectNoEditField_2       matlab.ui.control.EditField
-        InputSubjectNoEditFieldLabel_2  matlab.ui.control.Label
-        BadRespiration                  matlab.ui.control.Button
-        UncertainRespiration            matlab.ui.control.Button
-        GoodRespiration                 matlab.ui.control.Button
-        RespirationLabel                matlab.ui.control.Label
-        BadCardiac                      matlab.ui.control.Button
-        UncertainCardiac                matlab.ui.control.Button
-        GoodCardiac                     matlab.ui.control.Button
-        CardiacLabel                    matlab.ui.control.Label
-        GoButton                        matlab.ui.control.Button
-        InputSubjectNoEditField         matlab.ui.control.EditField
-        InputSubjectNoEditFieldLabel    matlab.ui.control.Label
-        ClickLoadtostartLabel           matlab.ui.control.Label
-        NextButton                      matlab.ui.control.Button
-        PreviousButton                  matlab.ui.control.Button
-        Image                           matlab.ui.control.Image
-        UncertainButton                 matlab.ui.control.Button
-        BadButton                       matlab.ui.control.Button
-        GoodButton                      matlab.ui.control.Button
-        GreatButton                     matlab.ui.control.Button
-        GreatCardiac                    matlab.ui.control.Button
-        GreatRespiration                matlab.ui.control.Button
+        LabelPrompter                    matlab.ui.control.Label
+        LoadButton1                            matlab.ui.control.Button
+        LoadButton2                            matlab.ui.control.Button
+        LoadButton3                            matlab.ui.control.Button
+        DeleteButton1                            matlab.ui.control.Button
+        DeleteButton2                            matlab.ui.control.Button
+        DeleteButton3                            matlab.ui.control.Button
+        PreviousButton                            matlab.ui.control.Button
+        NextButton                            matlab.ui.control.Button
+        IndexTracker                matlab.ui.control.Label
+        Panel1                          matlab.ui.container.Panel
+        Panel2                          matlab.ui.container.Panel
+        Panel3                          matlab.ui.container.Panel
+
+        SelectFieldPanel                          matlab.ui.container.Panel
+        FieldsList                    matlab.ui.control.Label
+        SelectFieldField            matlab.ui.control.EditField
+        SelectFieldButton           matlab.ui.control.Button
+
+        Label1                    matlab.ui.control.Label
+        Label2                    matlab.ui.control.Label
+        Label3                    matlab.ui.control.Label
+        CommentField            matlab.ui.control.EditField
+        AddCommentButton                            matlab.ui.control.Button
+        GoField            matlab.ui.control.EditField
+        GoButton                            matlab.ui.control.Button
+        GreatButton1                            matlab.ui.control.Button
+        GreatButton2                            matlab.ui.control.Button
+        GreatButton3                            matlab.ui.control.Button
+        FixableButton1                            matlab.ui.control.Button
+        FixableButton2                            matlab.ui.control.Button
+        FixableButton3                            matlab.ui.control.Button
+        UncertainButton1                            matlab.ui.control.Button
+        UncertainButton2                            matlab.ui.control.Button
+        UncertainButton3                            matlab.ui.control.Button
+        BadButton1                            matlab.ui.control.Button
+        BadButton2                            matlab.ui.control.Button
+        BadButton3                            matlab.ui.control.Button
+
     end
 
     
     properties (Access = public)
-        myPath = '/Users/rg/Documents/physio';
-
-        class = cell(0);
-        cardiac = cell(0);
-        respiration = cell(0);
-        comment = cell(0);
+        
+        dataPath = 'Data/'
         myTable = table();
-        count = 0;
-        filenames = [];
-        filecount = 0; % keep track of total file numbers
-        i = 0; % used to iterate through files
-        loaded = false;
+        
+        totalcount = 1; % keep track of total file numbers
+        i = 1; % used to iterate through files
+        loaded1 = false; % check if graph 1 has data loaded into it
+        loaded2 = false;
+        loaded3 = false;
+        outfile = 'results.csv';
 
-        sorted_or_not = []
-        sorted_or_not_c = []
-        sorted_or_not_r = []
+        fieldnames = [];
+        fieldname;
+
+        data1 = [];
+        data2 = [];
+        data3 = [];
+
+        axes1;
+        axes2;
+        axes3;
+
+        plot1;
+        plot2;
+        plot3;
+
     end
     
     methods (Access = private)
@@ -60,285 +85,389 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app)
-            
-            %----------------------------
-            % Check for output csv file that contains sorting information.
-            % If the file does not exist(i.e. first time using this app),
-            % create a new one. If output file exist, read the file into a
-            % table    
-            %----------------------------
-            % Check if the CSV file exists
-            filepath = strcat(app.myPath,'/Plots/');
-            dirlist = dir(strcat(app.myPath, '/Plots'));
-            outfilepath = strcat(app.myPath, '/result.csv');
-            if exist(outfilepath, 'file') == 2
+            if exist(app.outfile, 'file') == 2
                 % File exists, read the data from the CSV file into a table
-                app.myTable = readtable(outfilepath);
-            else
-                % File doesn't exist, create a table from PNG files in a folder
-                folderPath = strcat(app.myPath, '/Plots/'); % Replace with the actual path to your folder
-                fileNames = dir(fullfile(folderPath, '*.png')); % Get a list of all PNG files in the folder
+                app.myTable = readtable(app.outfile, "Delimiter", ",");
+                app.myTable = convertvars(app.myTable, app.myTable.Properties.VariableNames, 'string');
+                filename = string(app.myTable{1+app.i,1});
+                struct = load(strcat(app.dataPath, filename));
+                app.fieldnames = fieldnames(struct);
+                app.fieldname = string(app.myTable{1,2});
+                if ~ismissing(app.fieldname)
+                    ts = struct.(app.fieldname);
+
+                    if (size(ts, 1) == 1)
+                        ts = ts';
+                    end
         
-                % Create a cell array to store the file names
-                fileNamesCell = cell(numel(fileNames), 1);
-        
-                % Loop through the file names and extract the subject
-                % names(e.g. sub-A00038189)
-                for i = 1:numel(fileNames)
-                    fileName = fileNames(i).name(1:21);
-                    fileNamesCell{i} = strrep(fileName, '_', '-');
+                    app.axes1 = axes(app.Panel1, 'Position', [0.1 0.18 0.8 0.8]);
+                    app.plot1 = plot(app.axes1, ts);
+                    app.loaded1 = true;
                 end
+                app.fieldname = string(app.myTable{1,3});
+                if ~ismissing(app.fieldname)
+                    ts = struct.(app.fieldname);
         
-                % Create the table using the file names
-                data = table(fileNamesCell, 'VariableNames', {'FileName'});
+                    if (size(ts, 1) == 1)
+                        ts = ts';
+                    end
+        
+                    app.axes2 = axes(app.Panel2, 'Position', [0.1 0.18 0.8 0.8]);
+                    app.plot2 = plot(app.axes2, ts)
+                    app.loaded2 = true;
+                end
+                app.fieldname = string(app.myTable{1,4});
+                if ~ismissing(app.fieldname)
+                    ts = struct.(app.fieldname);
 
-                % Now add additional columns - Class("good", "bad","uncertain"), comments
-                % Get the number of rows in the table
-                numRows = height(data);
-
-                % Add two blank columns by assigning empty data with the same number of rows
-                data.Class = cell(numRows, 1);
-                data.Cardiac = cell(numRows, 1);
-                data.Respiration = cell(numRows, 1);
-                data.Comment = cell(numRows, 1); 
-                app.myTable = data;
+                    if (size(ts, 1) == 1)
+                        ts = ts';
+                    end
         
-                % Write the table to a new CSV file
-                writetable(app.myTable, outfilepath);
-            end
-            
-            % extract the class column from the table and populate the app
-            % property "class"
-            app.class = table2cell(app.myTable(:, "Class"));
-            app.respiration = table2cell(app.myTable(:, "Respiration"));
-            app.cardiac = table2cell(app.myTable(:, "Cardiac"));
-            app.comment = table2cell(app.myTable(:, "Comment"));
-            
-            %----------------------------
-            % Load and display plots
-            %----------------------------
-            
-            % update iterator
-            app.i = app.i + 1;
-        
-            % load files and store file names in 'filenames'
-            filelist = {dirlist.name};
-            filelist_size = size(filelist, 2);
-            app.filenames = filelist(:, 4:filelist_size);
-            app.filecount = size(app.filenames, 2);
-        
-            % set image to first file
-            path = string(append(filepath, app.filenames(1, 1)));
-            app.Image.ImageSource = path;
-        
-            % set label to subject label
-            cur_filename = char(app.filenames(1, app.i));
-            cur_filename = cur_filename(1:21);
-            app.ClickLoadtostartLabel.Text = cur_filename;
-        
-            % update bool
-            app.loaded = true;
-        
-            % udpate sorted_or_not array
-            app.sorted_or_not = ones(1, app.filecount)*false;
-            app.sorted_or_not_c = ones(1, app.filecount)*false;
-            app.sorted_or_not_r = ones(1, app.filecount)*false;
+                    app.axes3 = axes(app.Panel3, 'Position', [0.1 0.18 0.8 0.8]);
+                    app.plot3 = plot(app.axes3, ts)
+                    app.loaded3 = true;
+                end
+            else
+                fileNames = dir(fullfile(app.dataPath, '*.mat'));
                 
+                sz = [1+length(fileNames) 5];
+                app.totalcount = length(fileNames);
+                VariableNames = ["file_name", "first_graph", "second_graph", "third_graph", "comments"];
+                VariableTypes = ["string", "string", "string", "string", "string"];
+                app.myTable = table('Size', sz, 'VariableTypes', VariableTypes, 'VariableNames', VariableNames);
+                app.myTable{1,1} = "field_name";
+                
+                for i = 1:length(fileNames)
+                    app.myTable{1+i,1} = string(fileNames(i).name);
+                end
+
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
+               
 
-        % Button pushed function: NextButton
-        function NextButtonPushed(app, event)
-            filepath = strcat(app.myPath,'/Plots/');
-            if app.loaded == false
-                app.ClickLoadtostartLabel.Text = "Please load file first by clicking the load button";
-            else
-                if app.i <= (app.filecount - 1)
-                    % update iterator
-                    app.i = app.i + 1;
-                
-                    % set image to first file
-                    path = string(append(filepath, app.filenames(1, app.i)));
-                    %app.Label2.Text = path;
-                    app.Image.ImageSource = path;
+        function SelectFieldButtonPushed(app, event)
             
-                    % set label to subject label
-                    cur_filename = char(app.filenames(1, app.i));
-                    cur_filename = cur_filename(1:21);
-                    app.ClickLoadtostartLabel.Text = cur_filename;
-                    
-                % if reached last file, 
-                elseif app.i == app.filecount
-                    app.ClickLoadtostartLabel.Text = 'This is the last file';
-                end
-            end
+            app.fieldname = app.SelectFieldField.Value;
+            app.SelectFieldPanel.Visible = 'off';
+            app.FieldsList.Text = string(app.fieldnames);
+            app.FieldsList.Visible = 'off';
+            app.SelectFieldButton.Visible = 'off';
+            app.SelectFieldField.Visible = 'off';
 
         end
+        
+        % Button pushed function: Load the first plot
+        function LoadButton1Pushed(app, event)
+            
+            filename = string(app.myTable{1+app.i,1});
+            struct = load(strcat(app.dataPath, filename));
+            app.fieldname = string(app.myTable{1,2});
+            app.fieldnames = fieldnames(struct);
+            app.SelectFieldPanel.Visible = 'on';
+            app.FieldsList.Text = string(app.fieldnames);
+            app.FieldsList.Visible = 'on';
+            app.SelectFieldButton.Visible = 'on';
+            app.SelectFieldField.Visible = 'on';
+            waitfor(app,'fieldname');
+            
+            ts = struct.(app.fieldname);
 
-        % Button pushed function: PreviousButton
+            if (size(ts, 1) == 1)
+                ts = ts';
+            end
+
+            set(app.axes1,'Visible','on');
+            app.axes1 = axes(app.Panel1, 'Position', [0.1 0.18 0.8 0.8]);
+            app.plot1 = plot(app.axes1, ts);
+            app.myTable{1,2} = string(app.fieldname);
+            writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            app.loaded1 = true;
+
+        end
+
+        function LoadButton2Pushed(app, event)
+            
+            filename = string(app.myTable{1+app.i,1});
+            struct = load(strcat(app.dataPath, filename));
+            app.fieldname = string(app.myTable{1,3});
+            app.fieldnames = fieldnames(struct);
+            app.SelectFieldPanel.Visible = 'on';
+            app.FieldsList.Text = string(app.fieldnames);
+            app.FieldsList.Visible = 'on';
+            app.SelectFieldButton.Visible = 'on';
+            app.SelectFieldField.Visible = 'on';
+            waitfor(app,'fieldname');
+            
+            ts = struct.(app.fieldname);
+
+            if (size(ts, 1) == 1)
+                ts = ts';
+            end
+            set(app.axes2,'Visible','on');
+            app.axes2 = axes(app.Panel2, 'Position', [0.1 0.18 0.8 0.8]);
+            app.plot2 = plot(app.axes2, ts)
+            app.myTable{1,3} = string(app.fieldname);
+            writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            app.loaded2 = true;
+
+        end
+
+        function LoadButton3Pushed(app, event)
+            
+            filename = string(app.myTable{1+app.i,1});
+            struct = load(strcat(app.dataPath, filename));
+            app.fieldname = string(app.myTable{1,4});
+            app.fieldnames = fieldnames(struct);
+            app.SelectFieldPanel.Visible = 'on';
+            app.FieldsList.Text = string(app.fieldnames);
+            app.FieldsList.Visible = 'on';
+            app.SelectFieldButton.Visible = 'on';
+            app.SelectFieldField.Visible = 'on';
+            waitfor(app,'fieldname');
+            
+            ts = struct.(app.fieldname);
+
+            if (size(ts, 1) == 1)
+                ts = ts';
+            end
+            
+            set(app.axes3,'Visible','off');
+            app.axes3 = axes(app.Panel3, 'Position', [0.1 0.18 0.8 0.8]);
+            app.plot3 = plot(app.axes3, ts);
+            app.myTable{1,4} = string(app.fieldname);
+            writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            app.loaded3 = true;
+        end
+
+        function DeleteButton1Pushed(app, event)
+            if (app.loaded1)
+                set(app.axes1,'Visible','off');
+                cla(app.axes1);
+                app.myTable{:,2} = missing;
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+                app.loaded1 = false;
+            end
+        end
+
+        function DeleteButton2Pushed(app, event)
+            if (app.loaded2)
+                set(app.axes2,'Visible','off');
+                cla(app.axes2);
+                app.myTable{:,3} = missing;
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+                app.loaded2 = false;
+            end
+        end
+
+
+        function DeleteButton3Pushed(app, event)
+            if (app.loaded3)
+                set(app.axes3,'Visible','off');
+                cla(app.axes3);
+                app.myTable{:,4} = missing;
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+                app.loaded3 = false;
+            end
+        end
+
         function PreviousButtonPushed(app, event)
-            filepath = strcat(app.myPath,'/Plots/');
-            if app.loaded == false
-                app.ClickLoadtostartLabel.Text = "Please load file first by clicking the load button";
-            else
-                if app.i >= 2
-                    % update iterator
-                    app.i = app.i - 1;
-                
-                    % set image to first file
-                    path = string(append(filepath, app.filenames(1, app.i)));
-                    %app.Label2.Text = path;
-                    app.Image.ImageSource = path;
             
-                    % set label to subject label
-                    cur_filename = char(app.filenames(1, app.i));
-                    cur_filename = cur_filename(1:21);
-                    app.ClickLoadtostartLabel.Text = cur_filename;
-                    
-                % if reached last file, 
-                elseif app.i == 1
-                    app.ClickLoadtostartLabel.Text = 'This is the first file';
+            if (app.i > 1)
+                app.i = app.i - 1;
+                app.IndexTracker.Text = strcat('Index:',{' '}, string(app.i));
+                if (app.loaded1)
+                    filename = string(app.myTable{1+app.i,1});
+                    struct = load(strcat(app.dataPath, filename));
+                    app.fieldname = string(app.myTable{1,2});
+                    ts = struct.(app.fieldname);
+                    cla(app.axes1);
+                    app.plot1 = plot(app.axes1, ts);
                 end
+                if (app.loaded2)
+                    filename = string(app.myTable{1+app.i,1});
+                    struct = load(strcat(app.dataPath, filename));
+                    app.fieldname = string(app.myTable{1,3});
+                    ts = struct.(app.fieldname);
+                    cla(app.axes2);
+                    app.plot2 = plot(app.axes2, ts);
+                end
+                if (app.loaded3)
+                    filename = string(app.myTable{1+app.i,1});
+                    struct = load(strcat(app.dataPath, filename));
+                    app.fieldname = string(app.myTable{1,4});
+                    ts = struct.(app.fieldname);
+                    cla(app.axes3);
+                    app.plot3 = plot(app.axes3, ts);
+                end
+            
             end
+
         end
 
+        function NextButtonPushed(app, event)
+            
+            if(app.i < app.totalcount)
+                app.i = app.i + 1;
+                app.IndexTracker.Text = strcat('Index:',{' '}, string(app.i));
+                 if (app.loaded1)
+                    filename = string(app.myTable{1+app.i,1});
+                    struct = load(strcat(app.dataPath, filename));
+                    app.fieldname = string(app.myTable{1,2});
+                    ts = struct.(app.fieldname);
+                    cla(app.axes1);
+                    plot(app.axes1, ts);
+                end
+                if (app.loaded2)
+                    filename = string(app.myTable{1+app.i,1});
+                    struct = load(strcat(app.dataPath, filename));
+                    app.fieldname = string(app.myTable{1,3});
+                    ts = struct.(app.fieldname);
+                    cla(app.axes2);
+                    plot(app.axes2, ts);
+                end
+                if (app.loaded3)
+                    filename = string(app.myTable{1+app.i,1});
+                    struct = load(strcat(app.dataPath, filename));
+                    app.fieldname = string(app.myTable{1,4});
+                    ts = struct.(app.fieldname);
+                    cla(app.axes3);
+                    plot(app.axes3, ts);
+                end
+            
+            end
 
-        % Button pushed function: GreatButton
-        function GreatButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.class{app.i} = "great";
-            app.myTable.Class = app.class;
-            writetable(app.myTable, outfilepath);
         end
 
-        % Button pushed function: GoodButton
-        function GoodButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.class{app.i} = "good";
-            app.myTable.Class = app.class;
-            writetable(app.myTable, outfilepath);
-        end
-
-        % Button pushed function: UncertainButton
-        function UncertainButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.class{app.i} = "uncertain";
-            app.myTable.Class = app.class;
-            writetable(app.myTable, outfilepath);
-        end
-
-        % Callback function: BadButton, Image
-        function BadButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.class{app.i} = "bad";
-            app.myTable.Class = app.class;
-            writetable(app.myTable, outfilepath);
- 
-        end
-
-        % Button pushed function: GoButton
         function GoButtonPushed(app, event)
-            filepath = strcat(app.myPath,'/Plots/');
-            value = app.InputSubjectNoEditField.Value;
             
-            %app.Label2.Text = value;
-            if ~isempty(app.filenames)
-                
-                tmp = find(contains(app.filenames, value));
-                
-                if length(tmp) ~= 1
-                    app.ClickLoadtostartLabel.Text = "Number not descriptive enough";
-                else
-                    
-                    app.i = tmp;
-                    
-                    % set image to first file
-                    path = string(append(filepath, app.filenames(1, app.i)));
-                    app.Image.ImageSource = path;
-            
-                    % set label to subject label
-                    cur_filename = char(app.filenames(1, app.i));
-                    cur_filename = cur_filename(1:21);
-                    app.ClickLoadtostartLabel.Text = cur_filename;
+            value = str2double(app.GoField.Value);
+            if (value >= 1 && value <= app.totalcount)
+                app.i = value;
+                app.IndexTracker.Text = strcat('Index:',{' '}, string(app.i));
+                 if (app.loaded1)
+                    ts = app.data1(app.i,:);
+                    cla(app.axes1);
+                    plot(app.axes1, ts);
                 end
-            else
-                app.ClickLoadtostartLabel.Text = "Load files first";
-            end
+                if (app.loaded2)
+                    ts = app.data2(app.i,:);
+                    cla(app.axes2);
+                    plot(app.axes2, ts);
+                end
+                if (app.loaded3)
+                    ts = app.data3(app.i,:);
+                    cla(app.axes3);
+                    plot(app.axes3, ts);
+                end
             
+            end
+
+        end
+        
+        function GreatButton1Pushed(app, event)
+            if (app.loaded1)
+                app.myTable{app.i + 1,2} = "great";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: GreatCardiac
-        function GreatCardiacButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.cardiac{app.i} = "great";
-            app.myTable.Cardiac = app.cardiac;
-            writetable(app.myTable, outfilepath);
+        function GreatButton2Pushed(app, event)
+            if (app.loaded2)
+                app.myTable{app.i + 1,3} = "great";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: GoodCardiac
-        function GoodCardiacButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.cardiac{app.i} = "good";
-            app.myTable.Cardiac = app.cardiac;
-            writetable(app.myTable, outfilepath);
+
+        function GreatButton3Pushed(app, event)
+            if (app.loaded3)
+                app.myTable{app.i + 1,4} = "great";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: BadCardiac
-        function BadCardiacButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.cardiac{app.i} = "bad";
-            app.myTable.Cardiac = app.cardiac;
-            writetable(app.myTable, outfilepath);
+        function FixableButton1Pushed(app, event)
+            if (app.loaded1)
+                app.myTable{app.i + 1,2} = "fixable";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: UncertainCardiac
-        function UncertainCardiacButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.cardiac{app.i} = "uncertain";
-            app.myTable.Cardiac = app.cardiac;
-            writetable(app.myTable, outfilepath);
+        function FixableButton2Pushed(app, event)
+            if (app.loaded2)
+                app.myTable{app.i + 1,3} = "fixable";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: UncertainRespiration
-        function UncertainRespirationButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.respiration{app.i} = "uncertain";
-            app.myTable.Respiration = app.respiration;
-            writetable(app.myTable, outfilepath);
+
+        function FixableButton3Pushed(app, event)
+            if (app.loaded3)
+                app.myTable{app.i + 1,4} = "fixable";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: BadRespiration
-        function BadRespirationButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.respiration{app.i} = "bad";
-            app.myTable.Respiration = app.respiration;
-            writetable(app.myTable, outfilepath);
+        function UncertainButton1Pushed(app, event)
+            if (app.loaded1)
+                app.myTable{app.i + 1,2} = "uncertain";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: GoodRespiration
-        function GoodRespirationButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.respiration{app.i} = "good";
-            app.myTable.Respiration = app.respiration;
-            writetable(app.myTable, outfilepath);
+        function UncertainButton2Pushed(app, event)
+            if (app.loaded2)
+                app.myTable{app.i + 1,3} = "uncertain";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: GreatRespiration
-        function GreatRespirationButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            app.respiration{app.i} = "great";
-            app.myTable.Respiration = app.respiration;
-            writetable(app.myTable, outfilepath);
+
+        function UncertainButton3Pushed(app, event)
+            if (app.loaded3)
+                app.myTable{app.i + 1,4} = "uncertain";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
 
-        % Button pushed function: AddcommentButton
-        function AddcommentButtonPushed(app, event)
-            outfilepath = strcat(app.myPath, '/result.csv');
-            value = app.InputSubjectNoEditField_2.Value;
-            app.comment{app.i} = value;
-            app.myTable.Comment = app.comment;
-            writetable(app.myTable, outfilepath);
+        function BadButton1Pushed(app, event)
+            if (app.loaded1)
+                app.myTable{app.i + 1,2} = "bad";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
         end
+
+        function BadButton2Pushed(app, event)
+            if (app.loaded2)
+                app.myTable{app.i + 1,3} = "bad";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
+        end
+
+
+        function BadButton3Pushed(app, event)
+            if (app.loaded3)
+                app.myTable{app.i + 1,4} = "bad";
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
+        end
+
+
+        function AddCommentButtonButtonPushed(app, event)
+            if (app.loaded1)
+                value = string(app.CommentField.Value);
+                app.myTable{app.i + 1,5} = value;
+                writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            end
+        end
+
     end
+
+
+
+    
 
     % Component initialization
     methods (Access = private)
@@ -348,221 +477,262 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
 
             % Create UIFigure and hide until all components are created
             app.UIFigure = uifigure('Visible', 'off');
-            app.UIFigure.Color = [0.8431 0.9255 0.9804];
-            app.UIFigure.Position = [100 100 1230 826];
-            app.UIFigure.Name = 'MATLAB App';
+            app.UIFigure.Position = [100 100 1200 800];
+            app.UIFigure.Name = 'Manual Annotation Tool';
 
-            % Create GreatButton
-            app.GreatButton = uibutton(app.UIFigure, 'push');
-            app.GreatButton.ButtonPushedFcn = createCallbackFcn(app, @GreatButtonPushed, true);
-            app.GreatButton.BackgroundColor = [0 1 0];
-            app.GreatButton.FontName = 'Arial Black';
-            app.GreatButton.FontSize = 17;
-            app.GreatButton.FontWeight = 'bold';
-            app.GreatButton.Position = [400 39 100 43];
-            app.GreatButton.Text = 'Great';
+            app.LabelPrompter = uilabel(app.UIFigure);
+            app.LabelPrompter.FontName = 'Arial Black';
+            app.LabelPrompter.FontSize = 12;
+            app.LabelPrompter.FontWeight = 'bold';
+            app.LabelPrompter.Position = [25 760 300 25];
+            app.LabelPrompter.Text = 'Prompter';
+            app.LabelPrompter.Visible = 'off';
 
-            % Create GoodButton
-            app.GoodButton = uibutton(app.UIFigure, 'push');
-            app.GoodButton.ButtonPushedFcn = createCallbackFcn(app, @GoodButtonPushed, true);
-            app.GoodButton.BackgroundColor = [0 1 0];
-            app.GoodButton.FontName = 'Arial Black';
-            app.GoodButton.FontSize = 17;
-            app.GoodButton.FontWeight = 'bold';
-            app.GoodButton.Position = [550 39 100 43];
-            app.GoodButton.Text = 'Good';
-
-            % Create UncertainButton
-            app.UncertainButton = uibutton(app.UIFigure, 'push');
-            app.UncertainButton.ButtonPushedFcn = createCallbackFcn(app, @UncertainButtonPushed, true);
-            app.UncertainButton.BackgroundColor = [1 1 0];
-            app.UncertainButton.FontName = 'Arial Black';
-            app.UncertainButton.FontSize = 17;
-            app.UncertainButton.FontWeight = 'bold';
-            app.UncertainButton.Position = [700 39 100 43];
-            app.UncertainButton.Text = 'Uncertain';
+            app.Panel1 = uipanel(app.UIFigure, 'Position', [150, 550, 900, 200], 'BackgroundColor', 'white');
+            app.Panel2 = uipanel(app.UIFigure, 'Position', [150, 350, 900, 200], 'BackgroundColor', 'white');
+            app.Panel3 = uipanel(app.UIFigure, 'Position', [150, 150, 900, 200], 'BackgroundColor', 'white');
             
-            % Create BadButton
-            app.BadButton = uibutton(app.UIFigure, 'push');
-            app.BadButton.ButtonPushedFcn = createCallbackFcn(app, @BadButtonPushed, true);
-            app.BadButton.BackgroundColor = [1 0 0];
-            app.BadButton.FontName = 'Arial Black';
-            app.BadButton.FontSize = 17;
-            app.BadButton.FontWeight = 'bold';
-            app.BadButton.Position = [850 39 100 43];
-            app.BadButton.Text = 'Bad';
+            app.SelectFieldPanel = uipanel(app.UIFigure, 'Position', [300, 200, 600, 400], 'BackgroundColor', 'white');
+            app.SelectFieldPanel.Visible = 'off';
+            app.FieldsList = uilabel(app.UIFigure);
+            app.FieldsList.FontName = 'Arial Black';
+            app.FieldsList.FontSize = 12;
+            app.FieldsList.Position = [320 200 560 380];
+            app.FieldsList.WordWrap = 'on';
+            app.FieldsList.VerticalAlignment = 'top';
+            app.FieldsList.Visible = 'off';
 
-            % Create Image
-            app.Image = uiimage(app.UIFigure);
-            app.Image.ImageClickedFcn = createCallbackFcn(app, @BadButtonPushed, true);
-            app.Image.Position = [-118 217 1182 545];
+            app.SelectFieldField = uieditfield(app.UIFigure, 'text');
+            app.SelectFieldField .Position = [620 220 150 25];
+            app.SelectFieldField .Placeholder = "Type field here";
+            app.SelectFieldField.Visible = 'off';
 
-            % Create PreviousButton
+            app.SelectFieldButton = uibutton(app.UIFigure, 'push');
+            app.SelectFieldButton.ButtonPushedFcn = createCallbackFcn(app, @SelectFieldButtonPushed, true);
+            app.SelectFieldButton.BackgroundColor = ['white'];
+            app.SelectFieldButton.FontName = 'Arial Black';
+            app.SelectFieldButton.FontSize = 12;
+            app.SelectFieldButton.Position = [780 220 100 25];
+            app.SelectFieldButton.Text = 'Choose field';
+            app.SelectFieldButton.Visible = 'off';
+
+            app.Label1 = uilabel(app.UIFigure);
+            app.Label1.FontName = 'Arial Black';
+            app.Label1.FontSize = 12;
+            app.Label1.Position = [25 560 100 130];
+            app.Label1.WordWrap = 'on';
+            app.Label1.VerticalAlignment = 'top';
+            app.Label1.Text = 'Label1';
+            app.Label1.Visible = 'off';
+
+            app.Label2 = uilabel(app.UIFigure);
+            app.Label2.FontName = 'Arial Black';
+            app.Label2.FontSize = 12;
+            app.Label2.Position = [25 360 100 130];
+            app.Label2.WordWrap = 'on';
+            app.Label2.VerticalAlignment = 'top';
+            app.Label2.Text = 'Label2';
+            app.Label2.Visible = 'off';
+
+            app.Label3 = uilabel(app.UIFigure);
+            app.Label3.FontName = 'Arial Black';
+            app.Label3.FontSize = 12;
+            app.Label3.Position = [25 160 100 130];
+            app.Label3.WordWrap = 'on';
+            app.Label3.VerticalAlignment = 'top';
+            app.Label3.Text = 'Label3';
+            app.Label3.Visible = 'off';
+
+            app.LoadButton1 = uibutton(app.UIFigure, 'push');
+            app.LoadButton1.ButtonPushedFcn = createCallbackFcn(app, @LoadButton1Pushed, true);
+            app.LoadButton1.BackgroundColor = ['white'];
+            app.LoadButton1.FontName = 'Arial Black';
+            app.LoadButton1.FontSize = 14;
+            app.LoadButton1.Position = [25 700 100 50];
+            app.LoadButton1.Text = 'Load';
+
+            app.LoadButton2 = uibutton(app.UIFigure, 'push');
+            app.LoadButton2.ButtonPushedFcn = createCallbackFcn(app, @LoadButton2Pushed, true);
+            app.LoadButton2.BackgroundColor = ['white'];
+            app.LoadButton2.FontName = 'Arial Black';
+            app.LoadButton2.FontSize = 14;
+            app.LoadButton2.Position = [25 500 100 50];
+            app.LoadButton2.Text = 'Load';
+
+            app.LoadButton3 = uibutton(app.UIFigure, 'push');
+            app.LoadButton3.ButtonPushedFcn = createCallbackFcn(app, @LoadButton3Pushed, true);
+            app.LoadButton3.BackgroundColor = ['white'];
+            app.LoadButton3.FontName = 'Arial Black';
+            app.LoadButton3.FontSize = 14;
+            app.LoadButton3.Position = [25 300 100 50];
+            app.LoadButton3.Text = 'Load';
+
+            app.DeleteButton1 = uibutton(app.UIFigure, 'push');
+            app.DeleteButton1.ButtonPushedFcn = createCallbackFcn(app, @DeleteButton1Pushed, true);
+            app.DeleteButton1.BackgroundColor = ['white'];
+            app.DeleteButton1.FontName = 'Arial Black';
+            app.DeleteButton1.FontSize = 14;
+            app.DeleteButton1.Position = [25 640 100 50];
+            app.DeleteButton1.Text = 'Delete';
+
+            app.DeleteButton2 = uibutton(app.UIFigure, 'push');
+            app.DeleteButton2.ButtonPushedFcn = createCallbackFcn(app, @DeleteButton2Pushed, true);
+            app.DeleteButton2.BackgroundColor = ['white'];
+            app.DeleteButton2.FontName = 'Arial Black';
+            app.DeleteButton2.FontSize = 14;
+            app.DeleteButton2.Position = [25 440 100 50];
+            app.DeleteButton2.Text = 'Delete';
+
+            app.DeleteButton3 = uibutton(app.UIFigure, 'push');
+            app.DeleteButton3.ButtonPushedFcn = createCallbackFcn(app, @DeleteButton3Pushed, true);
+            app.DeleteButton3.BackgroundColor = ['white'];
+            app.DeleteButton3.FontName = 'Arial Black';
+            app.DeleteButton3.FontSize = 14;
+            app.DeleteButton3.Position = [25 240 100 50];
+            app.DeleteButton3.Text = 'Delete';
+
             app.PreviousButton = uibutton(app.UIFigure, 'push');
             app.PreviousButton.ButtonPushedFcn = createCallbackFcn(app, @PreviousButtonPushed, true);
-            app.PreviousButton.BackgroundColor = [1 1 1];
+            app.PreviousButton.BackgroundColor = ['white'];
             app.PreviousButton.FontName = 'Arial Black';
-            app.PreviousButton.FontSize = 16;
-            app.PreviousButton.Position = [50 85 106 46];
+            app.PreviousButton.FontSize = 12;
+            app.PreviousButton.Position = [840 760 100 25];
             app.PreviousButton.Text = 'Previous';
 
-            % Create NextButton
             app.NextButton = uibutton(app.UIFigure, 'push');
             app.NextButton.ButtonPushedFcn = createCallbackFcn(app, @NextButtonPushed, true);
-            app.NextButton.BackgroundColor = [1 1 1];
+            app.NextButton.BackgroundColor = ['white'];
             app.NextButton.FontName = 'Arial Black';
-            app.NextButton.FontSize = 16;
-            app.NextButton.FontWeight = 'bold';
-            app.NextButton.Position = [1050 81 105 46];
+            app.NextButton.FontSize = 12;
+            app.NextButton.Position = [950 760 100 25];
             app.NextButton.Text = 'Next';
 
-            % Create ClickLoadtostartLabel
-            app.ClickLoadtostartLabel = uilabel(app.UIFigure);
-            app.ClickLoadtostartLabel.FontName = 'Arial Black';
-            app.ClickLoadtostartLabel.FontSize = 15;
-            app.ClickLoadtostartLabel.FontWeight = 'bold';
-            app.ClickLoadtostartLabel.Position = [26 785 289 24];
-            app.ClickLoadtostartLabel.Text = 'Click "Load" to start!';
+            app.IndexTracker = uilabel(app.UIFigure);
+            app.IndexTracker.FontName = 'Arial Black';
+            app.IndexTracker.FontSize = 12;
+            app.IndexTracker.FontWeight = 'bold';
+            app.IndexTracker.Position = [1080 760 100 25];
+            app.IndexTracker.Text = strcat('Index:',{' '}, string(app.i));
 
-            % Create InputSubjectNoEditFieldLabel
-            app.InputSubjectNoEditFieldLabel = uilabel(app.UIFigure);
-            app.InputSubjectNoEditFieldLabel.HorizontalAlignment = 'right';
-            app.InputSubjectNoEditFieldLabel.FontName = 'Arial Black';
-            app.InputSubjectNoEditFieldLabel.FontSize = 14;
-            app.InputSubjectNoEditFieldLabel.Position = [740 782 170 22];
-            app.InputSubjectNoEditFieldLabel.Text = 'Input Subject Number';
+            app.GoField = uieditfield(app.UIFigure, 'text');
+            app.GoField.Position = [620 760 100 25];
+            app.GoField.Placeholder = "Subject #";
 
-            % Create InputSubjectNoEditField
-            app.InputSubjectNoEditField = uieditfield(app.UIFigure, 'text');
-            app.InputSubjectNoEditField.Position = [921 782 100 22];
-
-            % Create GoButton
             app.GoButton = uibutton(app.UIFigure, 'push');
             app.GoButton.ButtonPushedFcn = createCallbackFcn(app, @GoButtonPushed, true);
-            app.GoButton.BackgroundColor = [0.6588 1 0.698];
+            app.GoButton.BackgroundColor = ['white'];
             app.GoButton.FontName = 'Arial Black';
-            app.GoButton.FontSize = 15;
-            app.GoButton.FontWeight = 'bold';
-            app.GoButton.Position = [1041 778 68 31];
+            app.GoButton.FontSize = 12;
+            app.GoButton.Position = [730 760 100 25];
             app.GoButton.Text = 'Go';
+            
+            app.GreatButton1 = uibutton(app.UIFigure, 'push');
+            app.GreatButton1.ButtonPushedFcn = createCallbackFcn(app, @GreatButton1Pushed, true);
+            app.GreatButton1.BackgroundColor = ['green'];
+            app.GreatButton1.FontName = 'Arial Black';
+            app.GreatButton1.FontSize = 14;
+            app.GreatButton1.Position = [1075 705 100 40];
+            app.GreatButton1.Text = 'Great';
 
-            % Create CardiacLabel
-            app.CardiacLabel = uilabel(app.UIFigure);
-            app.CardiacLabel.FontName = 'Arial Black';
-            app.CardiacLabel.FontSize = 16;
-            app.CardiacLabel.FontWeight = 'bold';
-            app.CardiacLabel.Position = [250 98 73 25];
-            app.CardiacLabel.Text = 'Cardiac';
+            app.GreatButton2 = uibutton(app.UIFigure, 'push');
+            app.GreatButton2.ButtonPushedFcn = createCallbackFcn(app, @GreatButton2Pushed, true);
+            app.GreatButton2.BackgroundColor = ['green'];
+            app.GreatButton2.FontName = 'Arial Black';
+            app.GreatButton2.FontSize = 14;
+            app.GreatButton2.Position = [1075 505 100 40];
+            app.GreatButton2.Text = 'Great';
 
-            % Create GreatCardiac
-            app.GreatCardiac = uibutton(app.UIFigure, 'push');
-            app.GreatCardiac.ButtonPushedFcn = createCallbackFcn(app, @GreatCardiacButtonPushed, true);
-            app.GreatCardiac.BackgroundColor = [0.6863 0.9882 0.6039];
-            app.GreatCardiac.FontName = 'Arial Black';
-            app.GreatCardiac.FontSize = 14;
-            app.GreatCardiac.FontWeight = 'bold';
-            app.GreatCardiac.Position = [400 93 100 30];
-            app.GreatCardiac.Text = 'Great';
+            app.GreatButton3 = uibutton(app.UIFigure, 'push');
+            app.GreatButton3.ButtonPushedFcn = createCallbackFcn(app, @GreatButton3Pushed, true);
+            app.GreatButton3.BackgroundColor = ['green'];
+            app.GreatButton3.FontName = 'Arial Black';
+            app.GreatButton3.FontSize = 14;
+            app.GreatButton3.Position = [1075 305 100 40];
+            app.GreatButton3.Text = 'Great';
 
-            % Create GoodCardiac
-            app.GoodCardiac = uibutton(app.UIFigure, 'push');
-            app.GoodCardiac.ButtonPushedFcn = createCallbackFcn(app, @GoodCardiacButtonPushed, true);
-            app.GoodCardiac.BackgroundColor = [0.6863 0.9882 0.6039];
-            app.GoodCardiac.FontName = 'Arial Black';
-            app.GoodCardiac.FontSize = 14;
-            app.GoodCardiac.FontWeight = 'bold';
-            app.GoodCardiac.Position = [550 93 100 30];
-            app.GoodCardiac.Text = 'Good';
+            app.FixableButton1 = uibutton(app.UIFigure, 'push');
+            app.FixableButton1.ButtonPushedFcn = createCallbackFcn(app, @FixableButton1Pushed, true);
+            app.FixableButton1.BackgroundColor = ['cyan'];
+            app.FixableButton1.FontName = 'Arial Black';
+            app.FixableButton1.FontSize = 14;
+            app.FixableButton1.Position = [1075 655 100 40];
+            app.FixableButton1.Text = 'Fixable';
 
-            % Create UncertainCardiac
-            app.UncertainCardiac = uibutton(app.UIFigure, 'push');
-            app.UncertainCardiac.ButtonPushedFcn = createCallbackFcn(app, @UncertainCardiacButtonPushed, true);
-            app.UncertainCardiac.BackgroundColor = [0.9765 0.9882 0.702];
-            app.UncertainCardiac.FontName = 'Arial Black';
-            app.UncertainCardiac.FontSize = 14;
-            app.UncertainCardiac.FontWeight = 'bold';
-            app.UncertainCardiac.Position = [700 93 100 30];
-            app.UncertainCardiac.Text = 'Uncertain';
+            app.FixableButton2 = uibutton(app.UIFigure, 'push');
+            app.FixableButton2.ButtonPushedFcn = createCallbackFcn(app, @FixableButton2Pushed, true);
+            app.FixableButton2.BackgroundColor = ['cyan'];
+            app.FixableButton2.FontName = 'Arial Black';
+            app.FixableButton2.FontSize = 14;
+            app.FixableButton2.Position = [1075 455 100 40];
+            app.FixableButton2.Text = 'Fixable';
 
-            % Create BadCardiac
-            app.BadCardiac = uibutton(app.UIFigure, 'push');
-            app.BadCardiac.ButtonPushedFcn = createCallbackFcn(app, @BadCardiacButtonPushed, true);
-            app.BadCardiac.BackgroundColor = [1 0.6784 0.6784];
-            app.BadCardiac.FontName = 'Arial Black';
-            app.BadCardiac.FontSize = 14;
-            app.BadCardiac.FontWeight = 'bold';
-            app.BadCardiac.Position = [850 93 100 30];
-            app.BadCardiac.Text = 'Bad';
+            app.FixableButton3 = uibutton(app.UIFigure, 'push');
+            app.FixableButton3.ButtonPushedFcn = createCallbackFcn(app, @FixableButton3Pushed, true);
+            app.FixableButton3.BackgroundColor = ['cyan'];
+            app.FixableButton3.FontName = 'Arial Black';
+            app.FixableButton3.FontSize = 14;
+            app.FixableButton3.Position = [1075 255 100 40];
+            app.FixableButton3.Text = 'Fixable';
 
-            % Create RespirationLabel
-            app.RespirationLabel = uilabel(app.UIFigure);
-            app.RespirationLabel.FontName = 'Arial Black';
-            app.RespirationLabel.FontSize = 16;
-            app.RespirationLabel.FontWeight = 'bold';
-            app.RespirationLabel.Position = [250 137 106 25];
-            app.RespirationLabel.Text = 'Respiration';
+            app.UncertainButton1 = uibutton(app.UIFigure, 'push');
+            app.UncertainButton1.ButtonPushedFcn = createCallbackFcn(app, @UncertainButton1Pushed, true);
+            app.UncertainButton1.BackgroundColor = ['yellow'];
+            app.UncertainButton1.FontName = 'Arial Black';
+            app.UncertainButton1.FontSize = 14;
+            app.UncertainButton1.Position = [1075 605 100 40];
+            app.UncertainButton1.Text = 'Uncertain';
 
-            % Create GreatRespiration
-            app.GreatRespiration = uibutton(app.UIFigure, 'push');
-            app.GreatRespiration.ButtonPushedFcn = createCallbackFcn(app, @GreatRespirationButtonPushed, true);
-            app.GreatRespiration.BackgroundColor = [0.6863 0.9882 0.6039];
-            app.GreatRespiration.FontName = 'Arial Black';
-            app.GreatRespiration.FontSize = 14;
-            app.GreatRespiration.FontWeight = 'bold';
-            app.GreatRespiration.Position = [400 133 100 33];
-            app.GreatRespiration.Text = 'Great';
+            app.UncertainButton2 = uibutton(app.UIFigure, 'push');
+            app.UncertainButton2.ButtonPushedFcn = createCallbackFcn(app, @UncertainButton2Pushed, true);
+            app.UncertainButton2.BackgroundColor = ['yellow'];
+            app.UncertainButton2.FontName = 'Arial Black';
+            app.UncertainButton2.FontSize = 14;
+            app.UncertainButton2.Position = [1075 405 100 40];
+            app.UncertainButton2.Text = 'Uncertain';
 
+            app.UncertainButton3 = uibutton(app.UIFigure, 'push');
+            app.UncertainButton3.ButtonPushedFcn = createCallbackFcn(app, @UncertainButton3Pushed, true);
+            app.UncertainButton3.BackgroundColor = ['yellow'];
+            app.UncertainButton3.FontName = 'Arial Black';
+            app.UncertainButton3.FontSize = 14;
+            app.UncertainButton3.Position = [1075 205 100 40];
+            app.UncertainButton3.Text = 'Uncertain';
 
-            % Create GoodRespiration
-            app.GoodRespiration = uibutton(app.UIFigure, 'push');
-            app.GoodRespiration.ButtonPushedFcn = createCallbackFcn(app, @GoodRespirationButtonPushed, true);
-            app.GoodRespiration.BackgroundColor = [0.6863 0.9882 0.6039];
-            app.GoodRespiration.FontName = 'Arial Black';
-            app.GoodRespiration.FontSize = 14;
-            app.GoodRespiration.FontWeight = 'bold';
-            app.GoodRespiration.Position = [550 133 100 33];
-            app.GoodRespiration.Text = 'Good';
+            app.BadButton1 = uibutton(app.UIFigure, 'push');
+            app.BadButton1.ButtonPushedFcn = createCallbackFcn(app, @BadButton1Pushed, true);
+            app.BadButton1.BackgroundColor = ['red'];
+            app.BadButton1.FontName = 'Arial Black';
+            app.BadButton1.FontSize = 14;
+            app.BadButton1.Position = [1075 555 100 40];
+            app.BadButton1.Text = 'Bad';
 
-            % Create UncertainRespiration
-            app.UncertainRespiration = uibutton(app.UIFigure, 'push');
-            app.UncertainRespiration.ButtonPushedFcn = createCallbackFcn(app, @UncertainRespirationButtonPushed, true);
-            app.UncertainRespiration.BackgroundColor = [0.9765 0.9882 0.702];
-            app.UncertainRespiration.FontName = 'Arial Black';
-            app.UncertainRespiration.FontSize = 14;
-            app.UncertainRespiration.FontWeight = 'bold';
-            app.UncertainRespiration.Position = [700 133 100 33];
-            app.UncertainRespiration.Text = 'Uncertain';
+            app.BadButton2 = uibutton(app.UIFigure, 'push');
+            app.BadButton2.ButtonPushedFcn = createCallbackFcn(app, @BadButton2Pushed, true);
+            app.BadButton2.BackgroundColor = ['red'];
+            app.BadButton2.FontName = 'Arial Black';
+            app.BadButton2.FontSize = 14;
+            app.BadButton2.Position = [1075 355 100 40];
+            app.BadButton2.Text = 'Bad';
 
-            % Create BadRespiration
-            app.BadRespiration = uibutton(app.UIFigure, 'push');
-            app.BadRespiration.ButtonPushedFcn = createCallbackFcn(app, @BadRespirationButtonPushed, true);
-            app.BadRespiration.BackgroundColor = [1 0.6784 0.6784];
-            app.BadRespiration.FontName = 'Arial Black';
-            app.BadRespiration.FontSize = 14;
-            app.BadRespiration.Position = [850 133 100 33];
-            app.BadRespiration.Text = 'Bad';
+            app.BadButton3 = uibutton(app.UIFigure, 'push');
+            app.BadButton3.ButtonPushedFcn = createCallbackFcn(app, @BadButton3Pushed, true);
+            app.BadButton3.BackgroundColor = ['red'];
+            app.BadButton3.FontName = 'Arial Black';
+            app.BadButton3.FontSize = 14;
+            app.BadButton3.Position = [1075 155 100 40];
+            app.BadButton3.Text = 'Bad';
 
-            % Create InputSubjectNoEditFieldLabel_2
-            app.InputSubjectNoEditFieldLabel_2 = uilabel(app.UIFigure);
-            app.InputSubjectNoEditFieldLabel_2.HorizontalAlignment = 'right';
-            app.InputSubjectNoEditFieldLabel_2.FontName = 'Arial Black';
-            app.InputSubjectNoEditFieldLabel_2.FontSize = 16;
-            app.InputSubjectNoEditFieldLabel_2.Position = [1103 666 89 25];
-            app.InputSubjectNoEditFieldLabel_2.Text = 'Comment';
+            app.CommentField = uieditfield(app.UIFigure, 'text');
+            app.CommentField.Position = [100 50 1000 75]   ;
+            app.CommentField.Placeholder = "Add comments here";
 
-            % Create InputSubjectNoEditField_2
-            app.InputSubjectNoEditField_2 = uieditfield(app.UIFigure, 'text');
-            app.InputSubjectNoEditField_2.Position = [921 574 285 83];
-
-            % Create AddcommentButton
-            app.AddcommentButton = uibutton(app.UIFigure, 'push');
-            app.AddcommentButton.ButtonPushedFcn = createCallbackFcn(app, @AddcommentButtonPushed, true);
-            app.AddcommentButton.BackgroundColor = [1 1 1];
-            app.AddcommentButton.FontName = 'Arial Black';
-            app.AddcommentButton.FontSize = 15;
-            app.AddcommentButton.FontWeight = 'bold';
-            app.AddcommentButton.Position = [1077 521 129 31];
-            app.AddcommentButton.Text = 'Add comment';
+            app.AddCommentButton = uibutton(app.UIFigure, 'push');
+            app.AddCommentButton.ButtonPushedFcn = createCallbackFcn(app, @AddCommentButtonButtonPushed, true);
+            app.AddCommentButton.BackgroundColor = ['white'];
+            app.AddCommentButton.FontName = 'Arial Black';
+            app.AddCommentButton.FontSize = 12;
+            app.AddCommentButton.Position = [975 15 125 25];
+            app.AddCommentButton.Text = 'Save Comment';
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
