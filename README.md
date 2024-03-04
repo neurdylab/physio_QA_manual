@@ -7,15 +7,15 @@ This is a quality assessment app developed initially for visualizing and manuall
 Clone or download this repository on to your machine. 
 
 #### 2. Organize your files
-In the repository folder, create a folder named `Data`. In this folder, include all MAT files that correspond with subjects that need to quality assessed. The organization of the MAT files should be that each file corresponds to a subject, and each file has multiple fields, for each measure of the subject that was taken.
+In the repository folder, create a folder named `Data`. In this folder, include all MAT files that correspond with subjects that need to quality assessed. The organization of the MAT files should be that each file corresponds to a subject, and each file has multiple fields, a field for each measure of the subject that was taken (for example, there would be one field with data for the heart rate, one field with data for the skin conductance, etc).
 
 
 #### 3. Launch the app
-After you save your changes, you are ready to begin using this app. You can either launch it by clicking the `QA_App_modified_exported.m` file downloaded from this repository and then clicking run in MATLAB. After the app is launched, you should see this interface.
+After you save your changes, you are ready to begin using this app. You can launch it by clicking the `QA_App_modified_exported.m` file downloaded from this repository and then clicking run in MATLAB. After the app is launched, you should see this interface.
 
 ![image](https://github.com/RickReddy/physio_QA_manual/blob/main/Screen%20Shot%202024-03-04%20at%201.01.11%20PM.png)
 
-To load a specific field, click load and a list off all fields associated with the subjects will be generated. Then, type out one of the fields and the data for that field, for the first subject will be loaded. The previous and next buttons can be used to switch between subjects, and each category can be classified, as great, good, fixable, or bad. Comments can be saved for each file as well.
+To load a specific field, click load and a list of all fields associated with the subjects will be generated. Then, type out one of the fields and the data for that field, for the first subject will be loaded. The previous and next buttons can be used to switch between subjects, and each category can be classified, as great, good, fixable, or bad. Comments can be saved for each file as well.
 
 #### 4. Checking the result
 The output of this app is a csv file that will be created when the app is launched for the first time. The file will be automatically generated in the repository directory and named `result.csv`. 
