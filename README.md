@@ -7,15 +7,15 @@ This is a quality assessment app developed initially for visualizing and manuall
 Clone or download this repository on to your machine. 
 
 #### 2. Organize your files
-In the repository folder, create a folder named `Data`. In this folder, include all MAT files that correspond with subjects that need to quality assessed.
+In the repository folder, create a folder named `Data`. In this folder, include all MAT files that correspond with subjects that need to quality assessed. The organization of the MAT files should be that each file corresponds to a subject, and each file has multiple fields, for each measure of the subject that was taken.
 
 
 #### 3. Launch the app
-After you save your changes, you are ready to begin using this app. You can either launch it by clicking the `QA_App_New.mlapp` file downloaded from this repository or clicking the "Play" button in MATLAB. After the app is launched, you should see this interface with the image in the middle being the first plot in your `Plots` folder. 
+After you save your changes, you are ready to begin using this app. You can either launch it by clicking the `QA_App_modified_exported.m` file downloaded from this repository and then clicking run in MATLAB. After the app is launched, you should see this interface.
 
 ![image](https://github.com/rachel0427/QA_app_new/assets/55034774/7b42ad1a-ce9e-442c-b4d3-db040b9937f1)
 
-The first row of buttons allows you to classify a general quality of the signal combining your assessment for both the cardiac and respiration signal. Then you can go into more detail and provide classifications for the cardiac signal and respiration signal separately by clicking the buttons on corresponding rows. For each plot you are sorting, you can type in some comment in the text box at the bottom and click the `Add comment` to add a line of comment for future reference. 
+To load a specific field, click load and a list off all fields associated with the subjects will be generated. Then, type out one of the fields and the data for that field, for the first subject will be loaded. The previous and next buttons can be used to switch between subjects, and each category can be classified, as great, good, fixable, or bad. Comments can be saved for each file as well.
 
 #### 4. Checking the result
 The output of this app is a csv file that will be created when the app is launched for the first time. The file will be automatically generated in the repository directory and named `result.csv`. 
