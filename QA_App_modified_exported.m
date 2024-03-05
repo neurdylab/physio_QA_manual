@@ -93,6 +93,10 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
                 struct = load(strcat(app.dataPath, filename));
                 app.fieldnames = fieldnames(struct);
                 app.fieldname = string(app.myTable{1,2});
+                
+                fileNames = dir(fullfile(app.dataPath, '*.mat'));
+                app.totalcount = length(fileNames);
+
                 if ~ismissing(app.fieldname)
                     ts = struct.(app.fieldname);
 
