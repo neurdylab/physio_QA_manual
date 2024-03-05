@@ -99,7 +99,8 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
 
                 if ~ismissing(app.fieldname)
                     ts = struct.(app.fieldname);
-
+                    app.Label1.Text = app.fieldname;
+                    app.Label1.Visible = 'on';
                     if (size(ts, 1) == 1)
                         ts = ts';
                     end
@@ -107,29 +108,33 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
                     app.axes1 = axes(app.Panel1, 'Position', [0.1 0.18 0.8 0.8]);
                     app.plot1 = plot(app.axes1, ts);
                     app.loaded1 = true;
+                    
                 end
                 app.fieldname = string(app.myTable{1,3});
                 if ~ismissing(app.fieldname)
                     ts = struct.(app.fieldname);
-        
+                    app.Label2.Text = app.fieldname;
+                    app.Label2.Visible = 'on';
                     if (size(ts, 1) == 1)
                         ts = ts';
                     end
         
                     app.axes2 = axes(app.Panel2, 'Position', [0.1 0.18 0.8 0.8]);
-                    app.plot2 = plot(app.axes2, ts)
+                    app.plot2 = plot(app.axes2, ts);
                     app.loaded2 = true;
                 end
                 app.fieldname = string(app.myTable{1,4});
                 if ~ismissing(app.fieldname)
                     ts = struct.(app.fieldname);
+                    app.Label3.Text = app.fieldname;
+                    app.Label3.Visible = 'on';
 
                     if (size(ts, 1) == 1)
                         ts = ts';
                     end
         
                     app.axes3 = axes(app.Panel3, 'Position', [0.1 0.18 0.8 0.8]);
-                    app.plot3 = plot(app.axes3, ts)
+                    app.plot3 = plot(app.axes3, ts);
                     app.loaded3 = true;
                 end
             else
@@ -182,11 +187,14 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
                 ts = ts';
             end
 
-            set(app.axes1,'Visible','on');
+            
             app.axes1 = axes(app.Panel1, 'Position', [0.1 0.18 0.8 0.8]);
             app.plot1 = plot(app.axes1, ts);
+            
             app.myTable{1,2} = string(app.fieldname);
             writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            app.Label1.Text = app.fieldname;
+            app.Label1.Visible = 'on';
             app.loaded1 = true;
 
         end
@@ -209,11 +217,13 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
             if (size(ts, 1) == 1)
                 ts = ts';
             end
-            set(app.axes2,'Visible','on');
+            
             app.axes2 = axes(app.Panel2, 'Position', [0.1 0.18 0.8 0.8]);
-            app.plot2 = plot(app.axes2, ts)
+            app.plot2 = plot(app.axes2, ts);
             app.myTable{1,3} = string(app.fieldname);
             writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            app.Label2.Text = app.fieldname;
+            app.Label2.Visible = 'on';
             app.loaded2 = true;
 
         end
@@ -237,30 +247,32 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
                 ts = ts';
             end
             
-            set(app.axes3,'Visible','off');
+            
             app.axes3 = axes(app.Panel3, 'Position', [0.1 0.18 0.8 0.8]);
             app.plot3 = plot(app.axes3, ts);
             app.myTable{1,4} = string(app.fieldname);
             writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+            app.Label3.Text = app.fieldname;
+            app.Label3.Visible = 'on';
             app.loaded3 = true;
         end
 
         function DeleteButton1Pushed(app, event)
             if (app.loaded1)
-                set(app.axes1,'Visible','off');
-                cla(app.axes1);
+                delete(app.axes1);
                 app.myTable{:,2} = missing;
                 writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+                app.Label1.Visible = 'off';
                 app.loaded1 = false;
             end
         end
 
         function DeleteButton2Pushed(app, event)
             if (app.loaded2)
-                set(app.axes2,'Visible','off');
-                cla(app.axes2);
+                delete(app.axes2);
                 app.myTable{:,3} = missing;
                 writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+                app.Label2.Visible = 'off';
                 app.loaded2 = false;
             end
         end
@@ -268,10 +280,10 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
 
         function DeleteButton3Pushed(app, event)
             if (app.loaded3)
-                set(app.axes3,'Visible','off');
-                cla(app.axes3);
+                delete(app.axes3);
                 app.myTable{:,4} = missing;
                 writetable(app.myTable, app.outfile, 'WriteRowNames',true');
+                app.Label3.Visible = 'off';
                 app.loaded3 = false;
             end
         end
@@ -523,7 +535,7 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
             app.Label1 = uilabel(app.UIFigure);
             app.Label1.FontName = 'Arial Black';
             app.Label1.FontSize = 12;
-            app.Label1.Position = [25 560 100 130];
+            app.Label1.Position = [25 500 100 130];
             app.Label1.WordWrap = 'on';
             app.Label1.VerticalAlignment = 'top';
             app.Label1.Text = 'Label1';
@@ -532,7 +544,7 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
             app.Label2 = uilabel(app.UIFigure);
             app.Label2.FontName = 'Arial Black';
             app.Label2.FontSize = 12;
-            app.Label2.Position = [25 360 100 130];
+            app.Label2.Position = [25 300 100 130];
             app.Label2.WordWrap = 'on';
             app.Label2.VerticalAlignment = 'top';
             app.Label2.Text = 'Label2';
@@ -541,7 +553,7 @@ classdef QA_App_modified_exported < matlab.apps.AppBase
             app.Label3 = uilabel(app.UIFigure);
             app.Label3.FontName = 'Arial Black';
             app.Label3.FontSize = 12;
-            app.Label3.Position = [25 160 100 130];
+            app.Label3.Position = [25 100 100 130];
             app.Label3.WordWrap = 'on';
             app.Label3.VerticalAlignment = 'top';
             app.Label3.Text = 'Label3';
