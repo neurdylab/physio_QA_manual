@@ -743,7 +743,7 @@ classdef QA_App < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = QA_App_modified_exported
+        function app = QA_App
 
             % Create UIFigure and components
             createComponents(app)
