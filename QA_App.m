@@ -1,4 +1,4 @@
-classdef QA_App_modified_exported < matlab.apps.AppBase
+classdef QA_App < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
