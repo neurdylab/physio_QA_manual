@@ -22,7 +22,7 @@ Once you have either loaded or generated a csv, your GUI should look similar to 
 ![Screen Shot 2024-03-26 at 6 35 58 PM](https://github.com/RickReddy/physio_QA_manual/assets/40832092/80bbc1c9-186f-4166-a049-1b50e9ec3f71)
 
 #### 4. Checking the result
-The output of this app is a csv file that will be created when the app is launched for the first time. The file will be automatically generated in the repository directory and named `result.csv`. 
+The output of this app is a csv file that was named when you pressed generate csv. You can directly access this file to view the results.
 
 #### Note: 
-progress will be saved in the result.csv file, so you can close the app at anytime and continue at a later time as long as you do not make any changes to the repository structure or the output file name. 
+progress will be saved in the csv file, so you can close the app at anytime and continue at a later time as long as you do not make any changes to the repository structure or the output file name. 
