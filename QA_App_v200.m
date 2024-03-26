@@ -256,6 +256,8 @@ classdef QA_App_v200 < matlab.apps.AppBase
             
             app.LoadCSV.Visible = 'off';
             app.GenerateCSV.Visible = 'off';
+            app.CSVNameField.Visible = 'off';
+            app.CSVNameButton.Visible = 'off';
 
             app.Label1.Visible = 'on';
             app.Panel1.Visible = 'on';
