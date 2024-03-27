@@ -1,4 +1,4 @@
-classdef QA_App_v200 < matlab.apps.AppBase
+classdef QA_App_v101 < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -925,7 +925,7 @@ classdef QA_App_v200 < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = QA_App_v200
+        function app = QA_App_v101
 
             % Create UIFigure and components
             createComponents(app)
