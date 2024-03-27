@@ -33,7 +33,7 @@ Proper file organization is crucial for the QA_app to function correctly:
 Once your data is organized, you're ready to start assessing quality:
 
 - Open MATLAB and **navigate to the repository's root directory**.
-- **Find and run the `QA_App_v200.m` file**. This action will launch the Quality Assessment interface.
+- **Find and run the `QA_App_v101.m` file**. This action will launch the Quality Assessment interface.
 
 #### Using the App:
 
