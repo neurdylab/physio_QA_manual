@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physiological Signal Analysis Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f6fa;
+            color: #333;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .tab-nav {
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            min-width: 200px;
+        }
+
+        .tab-btn {
+            padding: 20px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tab-btn:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .tab-btn.active {
+            color: #007bff;
+            background: white;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 3px;
+            background: #007bff;
+        }
+
+        .tab-content {
+            flex: 1;
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .card p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .placeholder-chart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 200px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #e9ecef;
+            cursor: crosshair;
+            border-radius: 4px;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .chart-controls button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .chart-controls button:hover {
+            background: #0056b3;
+        }
+
+        .chart-controls label {
+            font-size: 14px;
+            color: #495057;
+            margin-left: 15px;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Physiological Signal Analysis Dashboard</h1>
+        </div>
+
+        <div class="tabs">
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="manual-qa">Manual QA</button>
+                <button class="tab-btn" data-tab="fix">Fix</button>
+                <button class="tab-btn" data-tab="group-results">Group Results</button>
+                <button class="tab-btn" data-tab="individual-report" id="individual-report-btn" style="display: none;">Individual Report</button>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="manual-qa">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">2.34</div>
+                            <div class="stat-label">Respiration Z-Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">-1.12</div>
+                            <div class="stat-label">PPG Z-Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">0.89</div>
+                            <div class="stat-label">fMRI Signal Z-Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">98.2%</div>
+                            <div class="stat-label">Signal Quality</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Respiration Signal Analysis</h3>
+                        <p>Respiration signal with z-score normalization. Drag to zoom, Shift+drag to pan.</p>
+                        <div class="chart-container">
+                            <canvas id="respirationChart" class="chart-canvas"></canvas>
+                            <div class="chart-controls">
+                                <button onclick="resetRespirationZoom()">Reset Zoom</button>
+                                <button onclick="generateNewData()">Generate New Data</button>
+                                <label>Respiration Signal</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>PPG Signal Analysis</h3>
+                        <p>Photoplethysmography (PPG) signal with z-score normalization. Drag to zoom, Shift+drag to pan.</p>
+                        <div class="chart-container">
+                            <canvas id="ppgChart" class="chart-canvas"></canvas>
+                            <div class="chart-controls">
+                                <button onclick="resetPpgZoom()">Reset Zoom</button>
+                                <button onclick="generateNewData()">Generate New Data</button>
+                                <label>PPG Signal</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Manual QA Notes</h3>
+                        <p>Record observations about signal quality, artifacts, and exclusion criteria for concurrent fMRI data.</p>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="fix">
+                    <div class="card">
+                        <h3>Signal Correction Tools</h3>
+                        <p>Apply corrections to physiological signals including drift removal, bandpass filtering, and artifact rejection.</p>
+                    </div>
+
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Signal Type</th>
+                                    <th>Original Z-Score</th>
+                                    <th>Corrected Z-Score</th>
+                                    <th>Correction Applied</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Respiration</td>
+                                    <td>3.45</td>
+                                    <td>2.34</td>
+                                    <td>Drift Correction</td>
+                                    <td>Fixed</td>
+                                </tr>
+                                <tr>
+                                    <td>PPG</td>
+                                    <td>-2.89</td>
+                                    <td>-1.12</td>
+                                    <td>Bandpass Filter</td>
+                                    <td>Fixed</td>
+                                </tr>
+                                <tr>
+                                    <td>fMRI Concurrent</td>
+                                    <td>1.23</td>
+                                    <td>0.89</td>
+                                    <td>Motion Artifact</td>
+                                    <td>Pending</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="group-results">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">24</div>
+                            <div class="stat-label">Total Participants</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">85.3%</div>
+                            <div class="stat-label">Avg. Signal Quality</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">0.73</div>
+                            <div class="stat-label">fMRI-PPG Correlation</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">0.61</div>
+                            <div class="stat-label">fMRI-Resp Correlation</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Mean Respiration Signal</h3>
+                        <p>Group-averaged respiration signal across all participants.</p>
+                        <div class="chart-container">
+                            <canvas id="meanRespirationChart" class="chart-canvas" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Mean PPG Signal</h3>
+                        <p>Group-averaged PPG signal across all participants.</p>
+                        <div class="chart-container">
+                            <canvas id="meanPpgChart" class="chart-canvas" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Signal Quality Distribution</h3>
+                        <p>Histogram of signal quality scores across participants.</p>
+                        <div class="chart-container">
+                            <canvas id="qualityHistogram" class="chart-canvas" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>fMRI-Physiology Coupling</h3>
+                        <p>Interactive scatter plot showing correlation between physiological signals and fMRI BOLD responses. Click on points to view individual reports.</p>
+                        <div class="chart-container">
+                            <canvas id="scatterPlot" class="chart-canvas" style="height: 350px;"></canvas>
+                            <div class="chart-controls">
+                                <label>Click on points to view individual participant reports</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Export Results</h3>
+                        <p>Download processed z-scored physiological data and analysis results in MATLAB, Python, or CSV formats.</p>
+                        <div class="chart-controls">
+                            <button onclick="exportData('matlab')">Export MATLAB</button>
+                            <button onclick="exportData('python')">Export Python</button>
+                            <button onclick="exportData('csv')">Export CSV</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="individual-report">
+                    <div class="card">
+                        <h3>Individual Participant Report</h3>
+                        <div class="chart-controls">
+                            <button onclick="closeIndividualReport()">← Back to Group Results</button>
+                        </div>
+                        <div id="participant-info">
+                            <p>Select a participant from the scatter plot to view their individual report.</p>
+                        </div>
+                    </div>
+
+                    <div class="card" id="participant-details" style="display: none;">
+                        <h3>Recording Details</h3>
+                        <div class="data-table">
+                            <table>
+                                <tbody id="participant-details-table">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card" id="participant-stats" style="display: none;">
+                        <h3>Signal Statistics</h3>
+                        <div class="stats-grid" id="participant-stats-grid">
+                        </div>
+                    </div>
+
+                    <div class="card" id="participant-respiration-chart" style="display: none;">
+                        <h3>Individual Respiration Signal</h3>
+                        <div class="chart-container">
+                            <canvas id="individualRespirationChart" class="chart-canvas" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card" id="participant-ppg-chart" style="display: none;">
+                        <h3>Individual PPG Signal</h3>
+                        <div class="chart-container">
+                            <canvas id="individualPpgChart" class="chart-canvas" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for chart functionality
+        let respirationCanvas, respirationCtx;
+        let ppgCanvas, ppgCtx;
+        let respirationData = [];
+        let ppgData = [];
+        let timePoints = [];
+        let respirationZoomRange = { start: 0, end: 1000 };
+        let ppgZoomRange = { start: 0, end: 1000 };
+        let originalRange = { start: 0, end: 1000 };
+        let isDragging = { respiration: false, ppg: false };
+        let isPanning = { respiration: false, ppg: false };
+        let dragStart = { respiration: null, ppg: null };
+        let panStart = { respiration: null, ppg: null };
+
+        // Global variables for statistical charts
+        let participantData = [];
+        let scatterPoints = [];
+        let selectedParticipant = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding pane
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+
+                    // Initialize charts based on active tab
+                    if (targetTab === 'manual-qa') {
+                        setTimeout(() => initializeManualQACharts(), 100);
+                    } else if (targetTab === 'group-results') {
+                        setTimeout(() => initializeStatisticalCharts(), 100);
+                    }
+                });
+            });
+
+            // Initialize charts
+            initializeManualQACharts();
+            generateParticipantData();
+        });
+
+        function generateTimeSeriesData() {
+            const numPoints = 2000;
+            respirationData = [];
+            ppgData = [];
+            timePoints = [];
+
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 10; // 0.1 second intervals
+                timePoints.push(time);
+
+                // Generate respiration signal (slower frequency, larger amplitude)
+                const respirationFreq = 0.2; // 0.2 Hz breathing rate
+                const respirationNoise = (Math.random() - 0.5) * 0.3;
+                const respiration = 2 * Math.sin(2 * Math.PI * respirationFreq * time) + respirationNoise;
+                respirationData.push(respiration);
+
+                // Generate PPG signal (higher frequency, heart rate)
+                const heartRate = 1.2; // 1.2 Hz heart rate (72 bpm)
+                const ppgNoise = (Math.random() - 0.5) * 0.4;
+                const ppgBaseline = 0.3 * Math.sin(2 * Math.PI * respirationFreq * time); // Respiratory modulation
+                const ppg = 1.5 * Math.sin(2 * Math.PI * heartRate * time) + ppgBaseline + ppgNoise;
+                ppgData.push(ppg);
+            }
+
+            originalRange = { start: 0, end: timePoints.length - 1 };
+            respirationZoomRange = { ...originalRange };
+            ppgZoomRange = { ...originalRange };
+        }
+
+        function initializeManualQACharts() {
+            respirationCanvas = document.getElementById('respirationChart');
+            ppgCanvas = document.getElementById('ppgChart');
+            
+            if (respirationCanvas) {
+                respirationCtx = respirationCanvas.getContext('2d');
+                respirationCanvas.width = respirationCanvas.offsetWidth;
+                respirationCanvas.height = respirationCanvas.offsetHeight;
+                setupEventListeners(respirationCanvas, 'respiration');
+            }
+            
+            if (ppgCanvas) {
+                ppgCtx = ppgCanvas.getContext('2d');
+                ppgCanvas.width = ppgCanvas.offsetWidth;
+                ppgCanvas.height = ppgCanvas.offsetHeight;
+                setupEventListeners(ppgCanvas, 'ppg');
+            }
+
+            generateTimeSeriesData();
+            if (respirationCanvas) drawSeparateChart('respiration');
+            if (ppgCanvas) drawSeparateChart('ppg');
+        }
+
+        function setupEventListeners(canvas, signalType) {
+            canvas.addEventListener('mousedown', (e) => handleMouseDown(e, signalType));
+            canvas.addEventListener('mousemove', (e) => handleMouseMove(e, signalType));
+            canvas.addEventListener('mouseup', (e) => handleMouseUp(e, signalType));
+            canvas.addEventListener('mouseleave', (e) => handleMouseUp(e, signalType));
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                drawSeparateChart(signalType);
+            });
+        }
+
+        function handleMouseDown(e, signalType) {
+            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (e.shiftKey) {
+                // Pan mode (shift + click)
+                isPanning[signalType] = true;
+                panStart[signalType] = { x, dataIndex: pixelToDataIndex(x, signalType) };
+                canvas.style.cursor = 'grabbing';
+            } else {
+                // Zoom mode (regular click)
+                isDragging[signalType] = true;
+                dragStart[signalType] = { x, y };
+                canvas.style.cursor = 'crosshair';
+            }
+        }
+
+        function handleMouseMove(e, signalType) {
+            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (isPanning[signalType] && panStart[signalType]) {
+                const currentDataIndex = pixelToDataIndex(x, signalType);
+                const deltaIndex = panStart[signalType].dataIndex - currentDataIndex;
+                
+                const zoomRange = signalType === 'respiration' ? respirationZoomRange : ppgZoomRange;
+                const rangeSize = zoomRange.end - zoomRange.start;
+                const newStart = Math.max(0, Math.min(originalRange.end - rangeSize, zoomRange.start + deltaIndex));
+                const newEnd = newStart + rangeSize;
+                
+                if (signalType === 'respiration') {
+                    respirationZoomRange.start = newStart;
+                    respirationZoomRange.end = newEnd;
+                } else {
+                    ppgZoomRange.start = newStart;
+                    ppgZoomRange.end = newEnd;
+                }
+                
+                drawSeparateChart(signalType);
+            } else if (isDragging[signalType] && dragStart[signalType]) {
+                drawSeparateChart(signalType);
+                drawZoomSelection(dragStart[signalType].x, x, signalType);
+            }
+        }
+
+        function handleMouseUp(e, signalType) {
+            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            
+            if (isDragging[signalType] && dragStart[signalType]) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                
+                const startIndex = Math.min(pixelToDataIndex(dragStart[signalType].x, signalType), pixelToDataIndex(x, signalType));
+                const endIndex = Math.max(pixelToDataIndex(dragStart[signalType].x, signalType), pixelToDataIndex(x, signalType));
+                
+                if (Math.abs(x - dragStart[signalType].x) > 10) { // Minimum drag distance
+                    if (signalType === 'respiration') {
+                        respirationZoomRange.start = Math.max(0, startIndex);
+                        respirationZoomRange.end = Math.min(timePoints.length - 1, endIndex);
+                    } else {
+                        ppgZoomRange.start = Math.max(0, startIndex);
+                        ppgZoomRange.end = Math.min(timePoints.length - 1, endIndex);
+                    }
+                    drawSeparateChart(signalType);
+                }
+            }
+
+            isDragging[signalType] = false;
+            isPanning[signalType] = false;
+            dragStart[signalType] = null;
+            panStart[signalType] = null;
+            canvas.style.cursor = 'crosshair';
+        }
+
+        function pixelToDataIndex(pixelX, signalType) {
+            const chartMargin = 60;
+            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            const chartWidth = canvas.width - 2 * chartMargin;
+            const ratio = (pixelX - chartMargin) / chartWidth;
+            const zoomRange = signalType === 'respiration' ? respirationZoomRange : ppgZoomRange;
+            const rangeSize = zoomRange.end - zoomRange.start;
+            return zoomRange.start + ratio * rangeSize;
+        }
+
+        function drawZoomSelection(startX, endX, signalType) {
+            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            const ctx = signalType === 'respiration' ? respirationCtx : ppgCtx;
+            
+            ctx.fillStyle = 'rgba(0, 123, 255, 0.2)';
+            ctx.fillRect(Math.min(startX, endX), 0, Math.abs(endX - startX), canvas.height);
+            
+            ctx.strokeStyle = 'rgba(0, 123, 255, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(Math.min(startX, endX), 0, Math.abs(endX - startX), canvas.height);
+            ctx.setLineDash([]);
+        }
+
+        function drawSeparateChart(signalType) {
+            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            const ctx = signalType === 'respiration' ? respirationCtx : ppgCtx;
+            const data = signalType === 'respiration' ? respirationData : ppgData;
+            const zoomRange = signalType === 'respiration' ? respirationZoomRange : ppgZoomRange;
+            const color = signalType === 'respiration' ? '#e74c3c' : '#3498db';
+            const label = signalType === 'respiration' ? 'Respiration' : 'PPG';
+
+            if (!canvas || !ctx) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const margin = 60;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+
+            // Draw grid
+            drawGrid(ctx, margin, chartWidth, chartHeight);
+
+            // Draw signal
+            drawSignal(ctx, data, color, margin, chartWidth, chartHeight, zoomRange);
+
+            // Draw axes
+            drawAxes(ctx, canvas, margin, chartWidth, chartHeight, zoomRange);
+
+            // Draw legend
+            drawLegend(ctx, margin, color, label);
+        }
+
+        function drawGrid(ctx, margin, chartWidth, chartHeight) {
+            ctx.strokeStyle = '#e9ecef';
+            ctx.lineWidth = 1;
+
+            // Vertical grid lines
+            const numVerticalLines = 10;
+            for (let i = 0; i <= numVerticalLines; i++) {
+                const x = margin + (i / numVerticalLines) * chartWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, margin);
+                ctx.lineTo(x, margin + chartHeight);
+                ctx.stroke();
+            }
+
+            // Horizontal grid lines
+            const numHorizontalLines = 6;
+            for (let i = 0; i <= numHorizontalLines; i++) {
+                const y = margin + (i / numHorizontalLines) * chartHeight;
+                ctx.beginPath();
+                ctx.moveTo(margin, y);
+                ctx.lineTo(margin + chartWidth, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawSignal(ctx, data, color, margin, chartWidth, chartHeight, zoomRange) {
+            if (data.length === 0) return;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            const startIdx = Math.floor(zoomRange.start);
+            const endIdx = Math.ceil(zoomRange.end);
+            
+            // Find min/max values in visible range for normalization
+            let minVal = Infinity, maxVal = -Infinity;
+            for (let i = startIdx; i <= endIdx && i < data.length; i++) {
+                minVal = Math.min(minVal, data[i]);
+                maxVal = Math.max(maxVal, data[i]);
+            }
+            
+            const range = maxVal - minVal;
+            const padding = range * 0.1;
+            minVal -= padding;
+            maxVal += padding;
+
+            let firstPoint = true;
+            for (let i = startIdx; i <= endIdx && i < data.length; i++) {
+                const x = margin + ((i - zoomRange.start) / (zoomRange.end - zoomRange.start)) * chartWidth;
+                const normalizedValue = (data[i] - minVal) / (maxVal - minVal);
+                const y = margin + (1 - normalizedValue) * chartHeight;
+
+                if (firstPoint) {
+                    ctx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+        }
+
+        function drawAxes(ctx, canvas, margin, chartWidth, chartHeight, zoomRange) {
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+
+            // Draw time labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+
+            const numLabels = 5;
+            for (let i = 0; i <= numLabels; i++) {
+                const x = margin + (i / numLabels) * chartWidth;
+                const timeValue = zoomRange.start + (i / numLabels) * (zoomRange.end - zoomRange.start);
+                const timeInSeconds = timeValue / 10; // Convert back to seconds
+                ctx.fillText(timeInSeconds.toFixed(1) + 's', x, margin + chartHeight + 20);
+            }
+
+            // Y-axis label
+            ctx.save();
+            ctx.translate(20, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Z-Score', 0, 0);
+            ctx.restore();
+
+            // X-axis label
+            ctx.textAlign = 'center';
+            ctx.fillText('Time', margin + chartWidth / 2, canvas.height - 10);
+        }
+
+        function drawLegend(ctx, margin, color, label) {
+            ctx.font = '14px Arial';
+            
+            // Draw colored square
+            ctx.fillStyle = color;
+            ctx.fillRect(margin, 20, 15, 15);
+
+            // Draw label
+            ctx.fillStyle = '#495057';
+            ctx.textAlign = 'left';
+            ctx.fillText(label, margin + 20, 32);
+        }
+
+        // Global functions for buttons
+        function resetRespirationZoom() {
+            respirationZoomRange = { ...originalRange };
+            drawSeparateChart('respiration');
+        }
+
+        function resetPpgZoom() {
+            ppgZoomRange = { ...originalRange };
+            drawSeparateChart('ppg');
+        }
+
+        function generateNewData() {
+            generateTimeSeriesData();
+            if (respirationCanvas) drawSeparateChart('respiration');
+            if (ppgCanvas) drawSeparateChart('ppg');
+        }
+
+        // Statistical chart functions
+        function generateParticipantData() {
+            participantData = [];
+            scatterPoints = [];
+            
+            const startDate = new Date(2024, 0, 1); // January 1, 2024
+            
+            for (let i = 0; i < 24; i++) {
+                const recordingDate = new Date(startDate.getTime() + Math.random() * 365 * 24 * 60 * 60 * 1000);
+                
+                const participant = {
+                    id: `SUB${String(i + 1).padStart(3, '0')}`,
+                    age: Math.floor(Math.random() * 40) + 20, // 20-60 years
+                    gender: Math.random() > 0.5 ? 'Male' : 'Female',
+                    recordingDate: recordingDate,
+                    sessionTime: `${Math.floor(Math.random() * 12) + 8}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
+                    respirationMean: (Math.random() - 0.5) * 4, // Z-score range
+                    ppgMean: (Math.random() - 0.5) * 4,
+                    fmriRespCorr: Math.random() * 0.8 + 0.1, // 0.1 to 0.9
+                    fmriPpgCorr: Math.random() * 0.8 + 0.1,
+                    signalQuality: Math.random() * 30 + 70, // 70-100%
+                    heartRate: Math.floor(Math.random() * 40) + 60, // 60-100 bpm
+                    respirationRate: Math.floor(Math.random() * 8) + 12, // 12-20 breaths/min
+                    scannerType: Math.random() > 0.5 ? 'Siemens 3T' : 'GE 3T',
+                    duration: Math.floor(Math.random() * 30) + 300 // 5-10 minutes in seconds
+                };
+                
+                participantData.push(participant);
+                scatterPoints.push({
+                    x: participant.fmriRespCorr,
+                    y: participant.fmriPpgCorr,
+                    participant: participant
+                });
+            }
+        }
+
+        function initializeStatisticalCharts() {
+            drawMeanRespirationChart();
+            drawMeanPpgChart();
+            drawQualityHistogram();
+            drawScatterPlot();
+        }
+
+        function drawMeanRespirationChart() {
+            const canvas = document.getElementById('meanRespirationChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 50;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+            
+            // Generate group mean respiration data
+            const numPoints = 100;
+            const meanRespData = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 10;
+                const respNoise = (Math.random() - 0.5) * 0.1;
+                meanRespData.push(1.5 * Math.sin(2 * Math.PI * 0.2 * time) + respNoise);
+            }
+            
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+            
+            // Draw grid
+            ctx.strokeStyle = '#e9ecef';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = margin + (i / 10) * chartWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, margin);
+                ctx.lineTo(x, margin + chartHeight);
+                ctx.stroke();
+            }
+            
+            // Draw respiration signal
+            drawGroupSignal(ctx, meanRespData, '#e74c3c', margin, chartWidth, chartHeight);
+            
+            // Draw axes
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (seconds)', margin + chartWidth / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Mean Z-Score', 0, 0);
+            ctx.restore();
+        }
+
+        function drawMeanPpgChart() {
+            const canvas = document.getElementById('meanPpgChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 50;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+            
+            // Generate group mean PPG data
+            const numPoints = 100;
+            const meanPpgData = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 10;
+                const ppgNoise = (Math.random() - 0.5) * 0.1;
+                meanPpgData.push(1.0 * Math.sin(2 * Math.PI * 1.2 * time) + 0.2 * Math.sin(2 * Math.PI * 0.2 * time) + ppgNoise);
+            }
+            
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+            
+            // Draw grid
+            ctx.strokeStyle = '#e9ecef';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = margin + (i / 10) * chartWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, margin);
+                ctx.lineTo(x, margin + chartHeight);
+                ctx.stroke();
+            }
+            
+            // Draw PPG signal
+            drawGroupSignal(ctx, meanPpgData, '#3498db', margin, chartWidth, chartHeight);
+            
+            // Draw axes
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (seconds)', margin + chartWidth / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Mean Z-Score', 0, 0);
+            ctx.restore();
+        }
+
+        function drawGroupSignal(ctx, data, color, margin, chartWidth, chartHeight) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const minVal = Math.min(...data);
+            const maxVal = Math.max(...data);
+            const range = maxVal - minVal;
+            
+            for (let i = 0; i < data.length; i++) {
+                const x = margin + (i / (data.length - 1)) * chartWidth;
+                const normalizedValue = (data[i] - minVal) / range;
+                const y = margin + (1 - normalizedValue) * chartHeight;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+        }
+
+        function drawQualityHistogram() {
+            const canvas = document.getElementById('qualityHistogram');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 50;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+            
+            // Create histogram bins
+            const bins = [0, 0, 0, 0, 0, 0]; // 70-75, 75-80, 80-85, 85-90, 90-95, 95-100
+            participantData.forEach(p => {
+                const binIndex = Math.min(Math.floor((p.signalQuality - 70) / 5), 5);
+                bins[binIndex]++;
+            });
+            
+            const maxCount = Math.max(...bins);
+            
+            // Draw bars
+            const barWidth = chartWidth / bins.length;
+            bins.forEach((count, i) => {
+                const barHeight = (count / maxCount) * chartHeight;
+                const x = margin + i * barWidth;
+                const y = margin + chartHeight - barHeight;
+                
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(x + 5, y, barWidth - 10, barHeight);
+                
+                // Draw count labels
+                ctx.fillStyle = '#495057';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(count.toString(), x + barWidth / 2, y - 5);
+                
+                // Draw bin labels
+                const binLabel = `${70 + i * 5}-${75 + i * 5}%`;
+                ctx.fillText(binLabel, x + barWidth / 2, margin + chartHeight + 20);
+            });
+            
+            // Draw axes
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Signal Quality (%)', margin + chartWidth / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Count', 0, 0);
+            ctx.restore();
+        }
+
+        function drawScatterPlot() {
+            const canvas = document.getElementById('scatterPlot');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 60;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+            
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+            
+            // Draw grid
+            ctx.strokeStyle = '#e9ecef';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = margin + (i / 10) * chartWidth;
+                const y = margin + (i / 10) * chartHeight;
+                ctx.beginPath();
+                ctx.moveTo(x, margin);
+                ctx.lineTo(x, margin + chartHeight);
+                ctx.moveTo(margin, y);
+                ctx.lineTo(margin + chartWidth, y);
+                ctx.stroke();
+            }
+            
+            // Draw scatter points
+            scatterPoints.forEach((point, index) => {
+                const x = margin + point.x * chartWidth;
+                const y = margin + (1 - point.y) * chartHeight;
+                
+                // Point styling
+                if (selectedParticipant && selectedParticipant.id === point.participant.id) {
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.strokeStyle = '#c0392b';
+                    ctx.lineWidth = 3;
+                } else {
+                    ctx.fillStyle = '#3498db';
+                    ctx.strokeStyle = '#2980b9';
+                    ctx.lineWidth = 2;
+                }
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Store point coordinates for click detection
+                point.screenX = x;
+                point.screenY = y;
+            });
+            
+            // Draw axes
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+            
+            // Axis labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            
+            // X-axis labels
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 10; i++) {
+                const x = margin + (i / 10) * chartWidth;
+                const value = (i / 10).toFixed(1);
+                ctx.fillText(value, x, margin + chartHeight + 20);
+            }
+            ctx.fillText('fMRI-Respiration Correlation', margin + chartWidth / 2, canvas.height - 10);
+            
+            // Y-axis labels
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 10; i++) {
+                const y = margin + (i / 10) * chartHeight;
+                const value = (1 - i / 10).toFixed(1);
+                ctx.fillText(value, margin - 20, y + 3);
+            }
+            
+            ctx.save();
+            ctx.translate(15, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('fMRI-PPG Correlation', 0, 0);
+            ctx.restore();
+            
+            // Add click event listener
+            canvas.onclick = handleScatterClick;
+        }
+
+        function handleScatterClick(event) {
+            const canvas = document.getElementById('scatterPlot');
+            const rect = canvas.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const clickY = event.clientY - rect.top;
+            
+            // Find clicked point
+            for (let point of scatterPoints) {
+                const distance = Math.sqrt(
+                    Math.pow(clickX - point.screenX, 2) + 
+                    Math.pow(clickY - point.screenY, 2)
+                );
+                
+                if (distance <= 10) { // Click tolerance
+                    selectedParticipant = point.participant;
+                    showIndividualReport(point.participant);
+                    drawScatterPlot(); // Redraw to highlight selected point
+                    break;
+                }
+            }
+        }
+
+        function showIndividualReport(participant) {
+            // Show the individual report tab
+            document.getElementById('individual-report-btn').style.display = 'block';
+            
+            // Switch to individual report tab
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            
+            document.getElementById('individual-report-btn').classList.add('active');
+            document.getElementById('individual-report').classList.add('active');
+            
+            // Populate participant info
+            const infoDiv = document.getElementById('participant-info');
+            infoDiv.innerHTML = `
+                <h4>Participant: ${participant.id}</h4>
+                <p>Selected from scatter plot correlation analysis</p>
+            `;
+            
+            // Show and populate details table
+            const detailsCard = document.getElementById('participant-details');
+            const detailsTable = document.getElementById('participant-details-table');
+            detailsCard.style.display = 'block';
+            
+            detailsTable.innerHTML = `
+                <tr><td><strong>Participant ID</strong></td><td>${participant.id}</td></tr>
+                <tr><td><strong>Age</strong></td><td>${participant.age} years</td></tr>
+                <tr><td><strong>Gender</strong></td><td>${participant.gender}</td></tr>
+                <tr><td><strong>Recording Date</strong></td><td>${participant.recordingDate.toDateString()}</td></tr>
+                <tr><td><strong>Session Time</strong></td><td>${participant.sessionTime}</td></tr>
+                <tr><td><strong>Scanner Type</strong></td><td>${participant.scannerType}</td></tr>
+                <tr><td><strong>Duration</strong></td><td>${Math.floor(participant.duration / 60)}:${String(participant.duration % 60).padStart(2, '0')}</td></tr>
+                <tr><td><strong>Signal Quality</strong></td><td>${participant.signalQuality.toFixed(1)}%</td></tr>
+            `;
+            
+            // Show and populate stats
+            const statsCard = document.getElementById('participant-stats');
+            const statsGrid = document.getElementById('participant-stats-grid');
+            statsCard.style.display = 'block';
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${participant.respirationMean.toFixed(2)}</div>
+                    <div class="stat-label">Respiration Z-Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${participant.ppgMean.toFixed(2)}</div>
+                    <div class="stat-label">PPG Z-Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${participant.fmriRespCorr.toFixed(3)}</div>
+                    <div class="stat-label">fMRI-Resp Correlation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${participant.fmriPpgCorr.toFixed(3)}</div>
+                    <div class="stat-label">fMRI-PPG Correlation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${participant.heartRate}</div>
+                    <div class="stat-label">Heart Rate (bpm)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${participant.respirationRate}</div>
+                    <div class="stat-label">Respiration Rate (/min)</div>
+                </div>
+            `;
+            
+            // Show and draw individual charts
+            const respirationChartCard = document.getElementById('participant-respiration-chart');
+            const ppgChartCard = document.getElementById('participant-ppg-chart');
+            respirationChartCard.style.display = 'block';
+            ppgChartCard.style.display = 'block';
+            setTimeout(() => {
+                drawIndividualRespirationChart(participant);
+                drawIndividualPpgChart(participant);
+            }, 100);
+        }
+
+        function drawIndividualRespirationChart(participant) {
+            const canvas = document.getElementById('individualRespirationChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 50;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+            
+            // Generate individual participant respiration signal preview
+            const numPoints = 200;
+            const individualRespData = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 20;
+                const respNoise = (Math.random() - 0.5) * 0.4;
+                const resp = participant.respirationMean + 1.5 * Math.sin(2 * Math.PI * 0.2 * time) + respNoise;
+                individualRespData.push(resp);
+            }
+            
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+            
+            // Draw respiration signal
+            drawGroupSignal(ctx, individualRespData, '#e74c3c', margin, chartWidth, chartHeight);
+            
+            // Draw axes
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (seconds)', margin + chartWidth / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Z-Score', 0, 0);
+            ctx.restore();
+        }
+
+        function drawIndividualPpgChart(participant) {
+            const canvas = document.getElementById('individualPpgChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const margin = 50;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+            
+            // Generate individual participant PPG signal preview
+            const numPoints = 200;
+            const individualPpgData = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 20;
+                const ppgNoise = (Math.random() - 0.5) * 0.3;
+                const ppg = participant.ppgMean + 1.2 * Math.sin(2 * Math.PI * 1.2 * time) + 0.2 * Math.sin(2 * Math.PI * 0.2 * time) + ppgNoise;
+                individualPpgData.push(ppg);
+            }
+            
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+            
+            // Draw PPG signal
+            drawGroupSignal(ctx, individualPpgData, '#3498db', margin, chartWidth, chartHeight);
+            
+            // Draw axes
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time (seconds)', margin + chartWidth / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Z-Score', 0, 0);
+            ctx.restore();
+        }
+
+        function closeIndividualReport() {
+            selectedParticipant = null;
+            
+            // Hide individual report tab
+            document.getElementById('individual-report-btn').style.display = 'none';
+            
+            // Switch back to group results
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            
+            document.querySelector('[data-tab="group-results"]').classList.add('active');
+            document.getElementById('group-results').classList.add('active');
+            
+            // Redraw scatter plot without selection
+            drawScatterPlot();
+        }
+
+        function exportData(format) {
+            alert(`Exporting data in ${format.toUpperCase()} format...`);
+        }
+    </script>
+</body>
+</html>
