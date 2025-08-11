@@ -120,30 +120,96 @@
         }
 
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-evenly !important;
+            align-items: center !important;
+            gap: 20px !important;
+            margin-bottom: 30px !important;
+            padding: 20px !important;
+            background: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            width: 100% !important;
+            flex-wrap: nowrap !important;
         }
 
         .stat-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
             background: white;
-            padding: 20px;
-            border-radius: 6px;
-            border-left: 4px solid #28a745;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        /* Removed hover effect as it's not providing useful information */
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            background: conic-gradient(var(--progress-color) var(--progress-angle), transparent var(--progress-angle));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 5px), white calc(100% - 5px));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), white calc(100% - 5px));
+            z-index: -1;
+        }
+
+        .stat-card.no-progress::before {
+            background: none;
+            border: 5px dashed var(--progress-color);
+        }
+
+        .stat-card:nth-child(1) {
+            --progress-color: #e74c3c;
+        }
+
+        .stat-card:nth-child(2) {
+            --progress-color: #3498db;
+        }
+
+        .stat-card:nth-child(3) {
+            --progress-color: #f39c12;
+        }
+
+        .stat-card:nth-child(4) {
+            --progress-color: #2ecc71;
+        }
+
+        /* Correlation-specific colors */
+        .stat-card.positive-corr {
+            --progress-color: #e74c3c !important; /* Happy red for positive correlations */
+        }
+
+        .stat-card.negative-corr {
+            --progress-color: #3498db !important; /* Happy blue for negative correlations */
         }
 
         .stat-number {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .stat-label {
             color: #6c757d;
-            font-size: 14px;
+            font-size: 11px;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.1;
+            white-space: pre-line; /* Allow line breaks in labels */
         }
 
         .placeholder-chart {
@@ -202,6 +268,133 @@
             margin-left: 15px;
         }
 
+        .chart-with-qa {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .chart-main {
+            flex: 1;
+        }
+
+        .qa-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 120px;
+        }
+
+        .qa-button {
+            padding: 12px 20px;
+            border: 2px solid;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .qa-button.good {
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .qa-button.good:hover,
+        .qa-button.good.selected {
+            background: #28a745;
+            color: white;
+        }
+
+        .qa-button.fixable {
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .qa-button.fixable:hover,
+        .qa-button.fixable.selected {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .qa-button.bad {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .qa-button.bad:hover,
+        .qa-button.bad.selected {
+            background: #dc3545;
+            color: white;
+        }
+
+        .qa-button.uncertain {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .qa-button.uncertain:hover,
+        .qa-button.uncertain.selected {
+            background: #6c757d;
+            color: white;
+        }
+
+        .comments-section {
+            background: white;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comments-section h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .save-comment-btn {
+            padding: 6px 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .save-comment-btn:hover {
+            background: #0056b3;
+        }
+
         .data-table {
             background: white;
             border-radius: 6px;
@@ -226,12 +419,606 @@
             font-weight: 600;
             color: #495057;
         }
+
+        .directory-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .auxiliary-helper-controls {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .auxiliary-helper-controls h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .auxiliary-selector select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .signal-picker-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signal-picker-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .signal-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .signal-picker-header h4 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .close-picker-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signal-picker-list {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .signal-picker-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .signal-picker-item:hover {
+            background: #f8f9fa;
+        }
+
+        .signal-picker-item.selected {
+            background: #e3f2fd;
+            border-color: #007bff;
+        }
+
+        .signal-picker-item.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .signal-picker-item.disabled:hover {
+            background: initial;
+        }
+
+        .signal-picker-checkbox {
+            margin-right: 12px;
+        }
+
+        .signal-picker-info {
+            flex: 1;
+        }
+
+        .signal-picker-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .signal-picker-type {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .signal-picker-footer {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            justify-content: flex-end;
+        }
+
+        .confirm-selection-btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .cancel-selection-btn {
+            padding: 8px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .directory-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .directory-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .directory-btn {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .directory-btn:hover {
+            background: #0056b3;
+        }
+
+        .directory-status {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .signal-nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #0056b3;
+        }
+
+        .nav-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .signal-counter {
+            flex: 1;
+            text-align: center;
+        }
+
+        .signal-counter span {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .signal-name {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+            font-family: monospace;
+        }
+
+        .view-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .primary-view {
+            flex: 2;
+        }
+
+        .auxiliary-views {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .auxiliary-view {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 3px solid #28a745;
+        }
+
+        .auxiliary-view h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .auxiliary-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .auxiliary-controls button {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .auxiliary-controls button:hover {
+            background: #218838;
+        }
+
+        .auxiliary-controls button.remove {
+            background: #dc3545;
+        }
+
+        .auxiliary-controls button.remove:hover {
+            background: #c82333;
+        }
+
+        .signal-selection-controls {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .signal-selection-controls h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .signal-selection-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-signal-btn {
+            padding: 8px 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .add-signal-btn:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        .add-signal-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .clear-signals-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .clear-signals-btn:hover {
+            background: #c82333;
+        }
+
+        .selected-signals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .selected-signals-status {
+            margin-top: 10px;
+        }
+
+        .selected-signal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+            margin-bottom: 8px;
+        }
+
+        .selected-signal-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .signal-number {
+            font-weight: bold;
+            color: #007bff;
+            min-width: 20px;
+        }
+
+        .selected-signal-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .signal-type-badge {
+            background: #007bff;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .remove-signal-btn {
+            padding: 4px 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-signal-btn:hover {
+            background: #c82333;
+        }
+
+        .analysis-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .signals-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .signal-of-interest {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #007bff;
+        }
+
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .signal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .signal-qa-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .signal-qa-buttons .qa-button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .signal-chart-container {
+            position: relative;
+        }
+
+        .scrollable-chart {
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .scrollable-chart canvas {
+            cursor: grab;
+        }
+
+        .scrollable-chart canvas:active {
+            cursor: grabbing;
+        }
+
+        .chart-scroll-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .scroll-btn {
+            padding: 6px 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .scroll-btn:hover {
+            background: #545b62;
+        }
+
+        .main-signals-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .main-signals-section h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .auxiliary-signals-section {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin-bottom: 20px;
+        }
+
+        .auxiliary-signals-section h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .auxiliary-section {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .auxiliary-controls-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .auxiliary-controls-header h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .auxiliary-controls-header select {
+            padding: 6px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .global-controls {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .view-controls button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .view-controls button:hover {
+            background: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
             <h1>Physiological Signal Analysis Dashboard</h1>
+            <div class="global-controls">
+                <div class="directory-controls">
+                    <input type="text" id="directoryPath" class="directory-input" placeholder="/path/to/signal/directory" value="/data/physio_signals/">
+                    <input type="text" id="fileName" class="directory-input" placeholder="sub-01_ses-01_task-rest_physio.tsv" style="margin-left: 10px;">
+                    <button onclick="loadSignalDirectory()" class="directory-btn">Load Directory</button>
+                    <button onclick="loadSpecificFile()" class="directory-btn">Load File</button>
+                    <div class="directory-status" id="directoryStatus">No directory loaded</div>
+                </div>
+            </div>
         </div>
 
         <div class="tabs">
@@ -244,54 +1031,117 @@
 
             <div class="tab-content">
                 <div class="tab-pane active" id="manual-qa">
-                    <div class="stats-grid">
+
+                    <div class="card" id="signalNavigationCard" style="display: none;">
+                        <h3>Signal Navigation & Selection</h3>
+                        <div class="signal-nav-controls">
+                            <button onclick="previousSignal()" class="nav-btn" id="prevBtn" disabled>← Previous</button>
+                            <div class="signal-counter">
+                                <span id="currentSignalIndex">0</span> / <span id="totalSignals">0</span>
+                                <div class="signal-name" id="currentSignalName">No signal loaded</div>
+                            </div>
+                            <button onclick="nextSignal()" class="nav-btn" id="nextBtn" disabled>Next →</button>
+                        </div>
+                        <div class="signal-selection-controls">
+                            <h4>Signals Selected for Display (Max 3)</h4>
+                            <div class="signal-selection-buttons">
+                                <button onclick="showSignalPicker()" class="add-signal-btn" id="addSignalBtn">+ Add Signals</button>
+                                <button onclick="clearSignalsOfInterest()" class="clear-signals-btn">Clear All Selected</button>
+                            </div>
+                            <div class="selected-signals-status">
+                                <div class="selected-signals-list" id="selectedSignalsList"></div>
+                            </div>
+                            
+                            <!-- Signal Picker Modal -->
+                            <div id="signalPickerModal" class="signal-picker-modal" style="display: none;">
+                                <div class="signal-picker-content">
+                                    <div class="signal-picker-header">
+                                        <h4>Select Signals to Add</h4>
+                                        <button onclick="closeSignalPicker()" class="close-picker-btn">×</button>
+                                    </div>
+                                    <div class="signal-picker-list" id="signalPickerList">
+                                        <!-- Available signals will be populated here -->
+                                    </div>
+                                    <div class="signal-picker-footer">
+                                        <button onclick="addSelectedSignals()" class="confirm-selection-btn">Add Selected</button>
+                                        <button onclick="closeSignalPicker()" class="cancel-selection-btn">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="auxiliary-helper-controls">
+                            <h4>Add Auxiliary Helper Signal</h4>
+                            <div class="auxiliary-selector">
+                                <select id="auxiliarySignalSelect" onchange="addAuxiliaryView()">
+                                    <option value="">-- Select Helper Signal --</option>
+                                    <option value="respiration">Respiration</option>
+                                    <option value="ppg">PPG</option>
+                                    <option value="ecg">ECG</option>
+                                    <option value="fmri">fMRI BOLD</option>
+                                    <option value="motion">Motion Parameters</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" id="signalStats" style="display: none;">
                         <div class="stat-card">
-                            <div class="stat-number">2.34</div>
-                            <div class="stat-label">Respiration Z-Score</div>
+                            <div class="stat-number" id="currentQuality">--</div>
+                            <div class="stat-label">Signal
+Quality (%)</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">-1.12</div>
-                            <div class="stat-label">PPG Z-Score</div>
+                            <div class="stat-number" id="cardiacCorrelation">--</div>
+                            <div class="stat-label">Cardiac
+Correlation</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">0.89</div>
-                            <div class="stat-label">fMRI Signal Z-Score</div>
+                            <div class="stat-number" id="gsCorrelation">--</div>
+                            <div class="stat-label">GS
+Correlation</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">98.2%</div>
-                            <div class="stat-label">Signal Quality</div>
+                            <div class="stat-number" id="motionCorrelation">--</div>
+                            <div class="stat-label">Head Motion
+Correlation</div>
                         </div>
                     </div>
                     
-                    <div class="card">
-                        <h3>Respiration Signal Analysis</h3>
-                        <p>Respiration signal with z-score normalization. Drag to zoom, Shift+drag to pan.</p>
-                        <div class="chart-container">
-                            <canvas id="respirationChart" class="chart-canvas"></canvas>
-                            <div class="chart-controls">
-                                <button onclick="resetRespirationZoom()">Reset Zoom</button>
-                                <button onclick="generateNewData()">Generate New Data</button>
-                                <label>Respiration Signal</label>
+                    <div class="card" id="signalAnalysisCard" style="display: none;">
+                        <h3>Interactive QA Window</h3>
+                        <p>Main signals support zoom/pan controls. Auxiliary signals follow main signal view without independent controls.</p>
+                        
+                        <!-- Main Signals Section -->
+                        <div class="main-signals-section">
+                            <h4>Main Signals of Interest (Interactive)</h4>
+                            <div class="signals-stack" id="signalsStack">
+                                <!-- Main signals of interest will be dynamically added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Auxiliary Signals Section -->
+                        <div class="auxiliary-signals-section">
+                            <h4>Auxiliary Helper Signals (View Only)</h4>
+                            <div id="auxiliaryViewsContainer"></div>
+                        </div>
+                        
+                        <div class="global-controls">
+                            <div class="view-controls">
+                                <button onclick="linkAllViews()" id="linkAllViewsBtn">Link All Views</button>
+                                <button onclick="unlinkAllViews()" id="unlinkAllViewsBtn" style="display: none;">Unlink All Views</button>
+                                <button onclick="resetAllZoom()">Reset All Zoom</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card">
-                        <h3>PPG Signal Analysis</h3>
-                        <p>Photoplethysmography (PPG) signal with z-score normalization. Drag to zoom, Shift+drag to pan.</p>
-                        <div class="chart-container">
-                            <canvas id="ppgChart" class="chart-canvas"></canvas>
-                            <div class="chart-controls">
-                                <button onclick="resetPpgZoom()">Reset Zoom</button>
-                                <button onclick="generateNewData()">Generate New Data</button>
-                                <label>PPG Signal</label>
-                            </div>
+                    <div class="comments-section">
+                        <h4>QA Comments</h4>
+                        <textarea class="comment-input" id="qaComments" placeholder="Record observations about signal quality, artifacts, and exclusion criteria for concurrent fMRI data..."></textarea>
+                        <div class="comment-meta">
+                            <span>Auto-saved</span>
+                            <button class="save-comment-btn" onclick="saveComments()">Save</button>
                         </div>
-                    </div>
-
-                    <div class="card">
-                        <h3>Manual QA Notes</h3>
-                        <p>Record observations about signal quality, artifacts, and exclusion criteria for concurrent fMRI data.</p>
                     </div>
                 </div>
 
@@ -359,21 +1209,6 @@
                         </div>
                     </div>
 
-                    <div class="card">
-                        <h3>Mean Respiration Signal</h3>
-                        <p>Group-averaged respiration signal across all participants.</p>
-                        <div class="chart-container">
-                            <canvas id="meanRespirationChart" class="chart-canvas" style="height: 250px;"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3>Mean PPG Signal</h3>
-                        <p>Group-averaged PPG signal across all participants.</p>
-                        <div class="chart-container">
-                            <canvas id="meanPpgChart" class="chart-canvas" style="height: 250px;"></canvas>
-                        </div>
-                    </div>
 
                     <div class="card">
                         <h3>Signal Quality Distribution</h3>
@@ -454,21 +1289,43 @@
         // Global variables for chart functionality
         let respirationCanvas, respirationCtx;
         let ppgCanvas, ppgCtx;
+        let primaryCanvas, primaryCtx;
         let respirationData = [];
         let ppgData = [];
         let timePoints = [];
         let respirationZoomRange = { start: 0, end: 1000 };
         let ppgZoomRange = { start: 0, end: 1000 };
         let originalRange = { start: 0, end: 1000 };
-        let isDragging = { respiration: false, ppg: false };
-        let isPanning = { respiration: false, ppg: false };
-        let dragStart = { respiration: null, ppg: null };
-        let panStart = { respiration: null, ppg: null };
+        let isDragging = { respiration: false, ppg: false, primary: false };
+        let isPanning = { respiration: false, ppg: false, primary: false };
+        let dragStart = { respiration: null, ppg: null, primary: null };
+        let panStart = { respiration: null, ppg: null, primary: null };
+
+        // Global variables for signal directory management
+        let signalDirectory = '';
+        let signalFiles = [];
+        let currentSignalIndex = 0;
+        let currentSignalData = {};
+        let primaryZoomRange = { start: 0, end: 1000 };
+        
+        // Global variables for multiple signals of interest
+        let signalsOfInterest = [];
+        let maxSignalsOfInterest = 3;
+        let nextSignalId = 1;
+        
+        // Global variables for auxiliary views
+        let auxiliaryViews = [];
+        let viewsLinked = false;
+        let nextAuxiliaryId = 1;
 
         // Global variables for statistical charts
         let participantData = [];
         let scatterPoints = [];
         let selectedParticipant = null;
+
+        // Global variables for QA functionality
+        let respirationQA = null;
+        let ppgQA = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             // Tab functionality
@@ -499,6 +1356,12 @@
             // Initialize charts
             initializeManualQACharts();
             generateParticipantData();
+            
+            // Initialize auto-save and load saved data
+            setTimeout(() => {
+                initializeAutoSave();
+                loadSavedData();
+            }, 100);
         });
 
         function generateTimeSeriesData() {
@@ -568,7 +1431,17 @@
         }
 
         function handleMouseDown(e, signalType) {
-            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            let canvas;
+            if (signalType === 'respiration') {
+                canvas = respirationCanvas;
+            } else if (signalType === 'ppg') {
+                canvas = ppgCanvas;
+            } else if (signalType === 'primary') {
+                canvas = primaryCanvas;
+            }
+            
+            if (!canvas) return;
+            
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -587,7 +1460,17 @@
         }
 
         function handleMouseMove(e, signalType) {
-            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            let canvas;
+            if (signalType === 'respiration') {
+                canvas = respirationCanvas;
+            } else if (signalType === 'ppg') {
+                canvas = ppgCanvas;
+            } else if (signalType === 'primary') {
+                canvas = primaryCanvas;
+            }
+            
+            if (!canvas) return;
+            
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -596,28 +1479,62 @@
                 const currentDataIndex = pixelToDataIndex(x, signalType);
                 const deltaIndex = panStart[signalType].dataIndex - currentDataIndex;
                 
-                const zoomRange = signalType === 'respiration' ? respirationZoomRange : ppgZoomRange;
+                let zoomRange;
+                if (signalType === 'respiration') {
+                    zoomRange = respirationZoomRange;
+                } else if (signalType === 'ppg') {
+                    zoomRange = ppgZoomRange;
+                } else if (signalType === 'primary') {
+                    zoomRange = primaryZoomRange;
+                }
+                
                 const rangeSize = zoomRange.end - zoomRange.start;
-                const newStart = Math.max(0, Math.min(originalRange.end - rangeSize, zoomRange.start + deltaIndex));
+                const maxEnd = signalType === 'primary' ? timePoints.length - 1 : originalRange.end;
+                const newStart = Math.max(0, Math.min(maxEnd - rangeSize, zoomRange.start + deltaIndex));
                 const newEnd = newStart + rangeSize;
                 
                 if (signalType === 'respiration') {
                     respirationZoomRange.start = newStart;
                     respirationZoomRange.end = newEnd;
-                } else {
+                    drawSeparateChart(signalType);
+                } else if (signalType === 'ppg') {
                     ppgZoomRange.start = newStart;
                     ppgZoomRange.end = newEnd;
+                    drawSeparateChart(signalType);
+                } else if (signalType === 'primary') {
+                    primaryZoomRange.start = newStart;
+                    primaryZoomRange.end = newEnd;
+                    drawPrimaryChart();
+                    
+                    // If views are linked, update auxiliary views
+                    if (viewsLinked) {
+                        auxiliaryViews.forEach(view => {
+                            view.zoomRange = { ...primaryZoomRange };
+                            drawAuxiliaryChart(view.id);
+                        });
+                    }
                 }
-                
-                drawSeparateChart(signalType);
             } else if (isDragging[signalType] && dragStart[signalType]) {
-                drawSeparateChart(signalType);
+                if (signalType === 'respiration' || signalType === 'ppg') {
+                    drawSeparateChart(signalType);
+                } else if (signalType === 'primary') {
+                    drawPrimaryChart();
+                }
                 drawZoomSelection(dragStart[signalType].x, x, signalType);
             }
         }
 
         function handleMouseUp(e, signalType) {
-            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            let canvas;
+            if (signalType === 'respiration') {
+                canvas = respirationCanvas;
+            } else if (signalType === 'ppg') {
+                canvas = ppgCanvas;
+            } else if (signalType === 'primary') {
+                canvas = primaryCanvas;
+            }
+            
+            if (!canvas) return;
             
             if (isDragging[signalType] && dragStart[signalType]) {
                 const rect = canvas.getBoundingClientRect();
@@ -630,11 +1547,24 @@
                     if (signalType === 'respiration') {
                         respirationZoomRange.start = Math.max(0, startIndex);
                         respirationZoomRange.end = Math.min(timePoints.length - 1, endIndex);
-                    } else {
+                        drawSeparateChart(signalType);
+                    } else if (signalType === 'ppg') {
                         ppgZoomRange.start = Math.max(0, startIndex);
                         ppgZoomRange.end = Math.min(timePoints.length - 1, endIndex);
+                        drawSeparateChart(signalType);
+                    } else if (signalType === 'primary') {
+                        primaryZoomRange.start = Math.max(0, startIndex);
+                        primaryZoomRange.end = Math.min(timePoints.length - 1, endIndex);
+                        drawPrimaryChart();
+                        
+                        // If views are linked, update auxiliary views
+                        if (viewsLinked) {
+                            auxiliaryViews.forEach(view => {
+                                view.zoomRange = { ...primaryZoomRange };
+                                drawAuxiliaryChart(view.id);
+                            });
+                        }
                     }
-                    drawSeparateChart(signalType);
                 }
             }
 
@@ -647,17 +1577,41 @@
 
         function pixelToDataIndex(pixelX, signalType) {
             const chartMargin = 60;
-            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
+            let canvas, zoomRange;
+            
+            if (signalType === 'respiration') {
+                canvas = respirationCanvas;
+                zoomRange = respirationZoomRange;
+            } else if (signalType === 'ppg') {
+                canvas = ppgCanvas;
+                zoomRange = ppgZoomRange;
+            } else if (signalType === 'primary') {
+                canvas = primaryCanvas;
+                zoomRange = primaryZoomRange;
+            }
+            
+            if (!canvas) return 0;
+            
             const chartWidth = canvas.width - 2 * chartMargin;
             const ratio = (pixelX - chartMargin) / chartWidth;
-            const zoomRange = signalType === 'respiration' ? respirationZoomRange : ppgZoomRange;
             const rangeSize = zoomRange.end - zoomRange.start;
             return zoomRange.start + ratio * rangeSize;
         }
 
         function drawZoomSelection(startX, endX, signalType) {
-            const canvas = signalType === 'respiration' ? respirationCanvas : ppgCanvas;
-            const ctx = signalType === 'respiration' ? respirationCtx : ppgCtx;
+            let canvas, ctx;
+            if (signalType === 'respiration') {
+                canvas = respirationCanvas;
+                ctx = respirationCtx;
+            } else if (signalType === 'ppg') {
+                canvas = ppgCanvas;
+                ctx = ppgCtx;
+            } else if (signalType === 'primary') {
+                canvas = primaryCanvas;
+                ctx = primaryCtx;
+            }
+            
+            if (!canvas || !ctx) return;
             
             ctx.fillStyle = 'rgba(0, 123, 255, 0.2)';
             ctx.fillRect(Math.min(startX, endX), 0, Math.abs(endX - startX), canvas.height);
@@ -833,6 +1787,1349 @@
             if (ppgCanvas) drawSeparateChart('ppg');
         }
 
+        // Signal Directory Management Functions
+        function loadSignalDirectory() {
+            const directoryPath = document.getElementById('directoryPath').value.trim();
+            if (!directoryPath) {
+                alert('Please enter a directory path');
+                return;
+            }
+
+            signalDirectory = directoryPath;
+            
+            // Mock BIDS format signal files - in real implementation, this would scan the directory
+            signalFiles = [
+                { name: 'sub-01_ses-01_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-01_ses-01_task-rest_physio.tsv' },
+                { name: 'sub-01_ses-02_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-01_ses-02_task-rest_physio.tsv' },
+                { name: 'sub-02_ses-01_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-02_ses-01_task-rest_physio.tsv' },
+                { name: 'sub-02_ses-02_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-02_ses-02_task-rest_physio.tsv' },
+                { name: 'sub-03_ses-01_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-03_ses-01_task-rest_physio.tsv' },
+                { name: 'sub-03_ses-02_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-03_ses-02_task-rest_physio.tsv' },
+                { name: 'sub-04_ses-01_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-04_ses-01_task-rest_physio.tsv' },
+                { name: 'sub-05_ses-01_task-rest_physio.tsv', type: 'bids', path: directoryPath + 'sub-05_ses-01_task-rest_physio.tsv' }
+            ];
+            
+            currentSignalIndex = 0;
+            
+            // Update UI
+            document.getElementById('directoryStatus').textContent = `Loaded ${signalFiles.length} signal files`;
+            document.getElementById('signalNavigationCard').style.display = 'block';
+            // Don't show stats until signals are actually displayed
+            document.getElementById('signalAnalysisCard').style.display = 'block';
+            document.getElementById('totalSignals').textContent = signalFiles.length;
+            
+            // Load first signal
+            loadCurrentSignal();
+        }
+
+        function loadSpecificFile() {
+            const directoryPath = document.getElementById('directoryPath').value.trim();
+            const fileName = document.getElementById('fileName').value.trim();
+            
+            if (!directoryPath) {
+                alert('Please enter a directory path');
+                return;
+            }
+            
+            if (!fileName) {
+                alert('Please enter a file name');
+                return;
+            }
+
+            const fullPath = directoryPath + (directoryPath.endsWith('/') ? '' : '/') + fileName;
+            
+            // Mock BIDS file validation - in real implementation, check if file exists and parse TSV headers
+            signalFiles = [
+                { name: fileName, type: 'bids', path: fullPath }
+            ];
+            
+            signalDirectory = directoryPath;
+            currentSignalIndex = 0;
+            
+            // Update UI
+            document.getElementById('directoryStatus').textContent = `Loaded specific file: ${fileName}`;
+            document.getElementById('signalNavigationCard').style.display = 'block';
+            // Don't show stats until signals are actually displayed
+            document.getElementById('signalAnalysisCard').style.display = 'block';
+            document.getElementById('totalSignals').textContent = '1';
+            
+            // Load the specific signal
+            loadCurrentSignal();
+        }
+
+        function loadCurrentSignal() {
+            if (signalFiles.length === 0) return;
+            
+            const signalFile = signalFiles[currentSignalIndex];
+            
+            // Generate mock signal data based on file type
+            generateSignalData(signalFile);
+            
+            // Update UI
+            updateSignalUI();
+            
+            // Initialize or update charts
+            setTimeout(() => {
+                initializePrimaryChart();
+                drawPrimaryChart();
+            }, 100);
+        }
+
+        function generateSignalData(signalFile) {
+            // Mock TSV parsing - in real implementation, parse actual BIDS TSV file
+            const mockTsvHeaders = ['cardiac', 'respiratory', 'trigger', 'oxy', 'co2'];
+            const detectedSignalType = mockTsvHeaders[Math.floor(Math.random() * mockTsvHeaders.length)];
+            
+            const numPoints = 2000;
+            let primaryData = [];
+            timePoints = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 10;
+                timePoints.push(time);
+                
+                let value;
+                // Generate data based on detected signal type from TSV headers
+                if (signalFile.type === 'bids') {
+                    switch (detectedSignalType) {
+                        case 'cardiac':
+                            const heartRate = 1.2;
+                            const cardiacNoise = (Math.random() - 0.5) * 0.4;
+                            const cardiacBaseline = 0.3 * Math.sin(2 * Math.PI * 0.2 * time);
+                            value = 1.5 * Math.sin(2 * Math.PI * heartRate * time) + cardiacBaseline + cardiacNoise;
+                            break;
+                        case 'respiratory':
+                            const respirationFreq = 0.2;
+                            const respirationNoise = (Math.random() - 0.5) * 0.3;
+                            value = 2 * Math.sin(2 * Math.PI * respirationFreq * time) + respirationNoise;
+                            break;
+                        case 'oxy':
+                            const oxyNoise = (Math.random() - 0.5) * 0.2;
+                            value = 98 + 2 * Math.sin(2 * Math.PI * 0.1 * time) + oxyNoise;
+                            break;
+                        case 'co2':
+                            const co2Noise = (Math.random() - 0.5) * 0.3;
+                            value = 40 + 5 * Math.sin(2 * Math.PI * 0.15 * time) + co2Noise;
+                            break;
+                        default:
+                            value = Math.sin(2 * Math.PI * 0.5 * time) + (Math.random() - 0.5) * 0.3;
+                    }
+                } else {
+                    // Legacy signal types
+                    switch (signalFile.type) {
+                        case 'respiration':
+                            const respirationFreq = 0.2;
+                            const respirationNoise = (Math.random() - 0.5) * 0.3;
+                            value = 2 * Math.sin(2 * Math.PI * respirationFreq * time) + respirationNoise;
+                            break;
+                        case 'ppg':
+                            const heartRate = 1.2;
+                            const ppgNoise = (Math.random() - 0.5) * 0.4;
+                            const ppgBaseline = 0.3 * Math.sin(2 * Math.PI * 0.2 * time);
+                            value = 1.5 * Math.sin(2 * Math.PI * heartRate * time) + ppgBaseline + ppgNoise;
+                            break;
+                        default:
+                            value = Math.sin(2 * Math.PI * 0.5 * time) + (Math.random() - 0.5) * 0.3;
+                    }
+                }
+                
+                primaryData.push(value);
+            }
+            
+            currentSignalData = {
+                primary: primaryData,
+                type: signalFile.type === 'bids' ? detectedSignalType : signalFile.type,
+                name: signalFile.name,
+                path: signalFile.path,
+                zScore: (Math.random() - 0.5) * 4,
+                quality: Math.random() * 30 + 70,
+                detectedColumns: signalFile.type === 'bids' ? mockTsvHeaders : null
+            };
+            
+            primaryZoomRange = { start: 0, end: timePoints.length - 1 };
+        }
+
+        function updateSignalUI() {
+            const signalFile = signalFiles[currentSignalIndex];
+            
+            // Update navigation
+            document.getElementById('currentSignalIndex').textContent = currentSignalIndex + 1;
+            document.getElementById('currentSignalName').textContent = signalFile.name;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSignalIndex === 0;
+            document.getElementById('nextBtn').disabled = currentSignalIndex === signalFiles.length - 1;
+            
+            // Generate mock correlations between different signals
+            const cardiacCorr = (Math.random() - 0.5) * 1.6; // -0.8 to 0.8
+            const gsCorr = (Math.random() - 0.5) * 0.8; // -0.4 to 0.4
+            const motionCorr = (Math.random() - 0.5) * 0.6; // -0.3 to 0.3
+            
+            // Update stats with correlations and quality (only if stats should be visible)
+            const statsSection = document.getElementById('signalStats');
+            if (statsSection && signalsOfInterest.length > 0) {
+                updateStatCard('currentQuality', currentSignalData.quality.toFixed(1), currentSignalData.quality, true);
+                updateStatCard('cardiacCorrelation', cardiacCorr.toFixed(3), Math.abs(cardiacCorr) * 100, false, cardiacCorr);
+                updateStatCard('gsCorrelation', gsCorr.toFixed(3), Math.abs(gsCorr) * 100, false, gsCorr);
+                updateStatCard('motionCorrelation', motionCorr.toFixed(3), Math.abs(motionCorr) * 100, false, motionCorr);
+            }
+            
+            // Update signals list and buttons
+            updateSignalsList();
+            updateAddButton();
+            
+            // Clear QA selection
+            clearQASelection();
+        }
+
+        function updateStatCard(elementId, value, percentage, isPercentage, correlationValue = null) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.textContent = value;
+            
+            // Get the parent stat card
+            const statCard = element.closest('.stat-card');
+            if (!statCard) return;
+            
+            if (isPercentage && percentage !== null) {
+                // Calculate progress angle (0-360 degrees) for quality percentage
+                const progressAngle = (percentage / 100) * 360;
+                statCard.style.setProperty('--progress-angle', `${progressAngle}deg`);
+                statCard.classList.remove('no-progress');
+                statCard.classList.remove('positive-corr', 'negative-corr');
+            } else if (correlationValue !== null) {
+                // Handle correlation values with color-coded circles
+                const absCorr = Math.abs(correlationValue);
+                const progressAngle = absCorr * 360; // Use absolute value for circle completion
+                
+                statCard.style.setProperty('--progress-angle', `${progressAngle}deg`);
+                statCard.classList.remove('no-progress');
+                
+                // Add color classes based on correlation sign
+                if (correlationValue > 0) {
+                    statCard.classList.add('positive-corr');
+                    statCard.classList.remove('negative-corr');
+                } else {
+                    statCard.classList.add('negative-corr');
+                    statCard.classList.remove('positive-corr');
+                }
+            } else {
+                // Show dashed border for non-percentage, non-correlation values
+                statCard.classList.add('no-progress');
+                statCard.classList.remove('positive-corr', 'negative-corr');
+            }
+        }
+
+        function previousSignal() {
+            if (currentSignalIndex > 0) {
+                currentSignalIndex--;
+                loadCurrentSignal();
+            }
+        }
+
+        function nextSignal() {
+            if (currentSignalIndex < signalFiles.length - 1) {
+                currentSignalIndex++;
+                loadCurrentSignal();
+            }
+        }
+
+        function clearQASelection() {
+            const qaButtons = document.querySelectorAll('#signalAnalysisCard .qa-buttons button');
+            qaButtons.forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function setCurrentSignalQA(rating) {
+            // Update button states
+            clearQASelection();
+            const selectedButton = document.querySelector(`#signalAnalysisCard .qa-button.${rating}`);
+            if (selectedButton) {
+                selectedButton.classList.add('selected');
+            }
+            
+            console.log(`Signal ${signalFiles[currentSignalIndex].name} QA set to: ${rating}`);
+        }
+
+        // Multiple Signals of Interest Functions
+        function addSignalOfInterest() {
+            if (signalsOfInterest.length >= maxSignalsOfInterest) {
+                alert(`Maximum of ${maxSignalsOfInterest} signals of interest allowed`);
+                return;
+            }
+            
+            if (!currentSignalData.name) {
+                alert('No signal loaded to add');
+                return;
+            }
+            
+            // Check if this signal is already added
+            if (signalsOfInterest.some(signal => signal.originalName === currentSignalData.name)) {
+                alert(`Signal "${currentSignalData.name}" is already selected.`);
+                return;
+            }
+            
+            const signalOfInterest = {
+                id: nextSignalId++,
+                originalName: currentSignalData.name,
+                type: currentSignalData.type,
+                data: [...currentSignalData.primary],
+                zoomRange: { start: 0, end: timePoints.length - 1 },
+                scrollOffset: 0,
+                qaRating: null,
+                zScore: currentSignalData.zScore,
+                quality: currentSignalData.quality
+            };
+            
+            signalsOfInterest.push(signalOfInterest);
+            updateSignalsList();
+            updateSignalsStack();
+            updateAddButton();
+        }
+
+        function removeSignalOfInterest(signalId) {
+            signalsOfInterest = signalsOfInterest.filter(signal => signal.id !== signalId);
+            updateSignalsList();
+            updateSignalsStack();
+            updateAddButton();
+        }
+
+        function clearSignalsOfInterest() {
+            signalsOfInterest = [];
+            updateSignalsList();
+            updateSignalsStack();
+            updateAddButton();
+        }
+
+        function updateSignalsList() {
+            const listContainer = document.getElementById('selectedSignalsList');
+            if (!listContainer) return;
+            
+            const totalSignals = signalsOfInterest.length + auxiliaryViews.length;
+            
+            if (totalSignals === 0) {
+                listContainer.innerHTML = '<div style="color: #6c757d; font-style: italic; padding: 15px; background: #f8f9fa; border-radius: 4px; text-align: center;">No signals selected for display</div>';
+                return;
+            }
+            
+            let content = `<div style="margin-bottom: 10px; font-weight: 500; color: #2c3e50;">
+                ${totalSignals} signal${totalSignals > 1 ? 's' : ''} selected for display:
+            </div>`;
+            
+            // Add main signals of interest
+            if (signalsOfInterest.length > 0) {
+                content += `<div style="margin-bottom: 8px; font-weight: 500; color: #007bff; font-size: 13px;">Main Signals (Interactive):</div>`;
+                content += signalsOfInterest.map((signal, index) => `
+                    <div class="selected-signal-item">
+                        <div class="selected-signal-info">
+                            <span class="signal-number">${index + 1}.</span>
+                            <span class="selected-signal-name">${signal.originalName}</span>
+                            <span class="signal-type-badge">${signal.type.toUpperCase()}</span>
+                        </div>
+                        <button class="remove-signal-btn" onclick="removeSignalOfInterest(${signal.id})">×</button>
+                    </div>
+                `).join('');
+            }
+            
+            // Add auxiliary signals
+            if (auxiliaryViews.length > 0) {
+                content += `<div style="margin: 15px 0 8px 0; font-weight: 500; color: #28a745; font-size: 13px;">Auxiliary Signals (View Only):</div>`;
+                content += auxiliaryViews.map((auxView, index) => `
+                    <div class="selected-signal-item" style="border-left-color: #28a745;">
+                        <div class="selected-signal-info">
+                            <span class="signal-number">A${index + 1}.</span>
+                            <span class="selected-signal-name">${auxView.type} Helper</span>
+                            <span class="signal-type-badge" style="background: #28a745;">${auxView.type.toUpperCase()}</span>
+                        </div>
+                        <button class="remove-signal-btn" onclick="removeAuxiliaryView('${auxView.id}')">×</button>
+                    </div>
+                `).join('');
+            }
+            
+            listContainer.innerHTML = content;
+        }
+
+        function updateAddButton() {
+            const addBtn = document.getElementById('addSignalBtn');
+            if (!addBtn) return;
+            
+            if (signalsOfInterest.length >= maxSignalsOfInterest) {
+                addBtn.disabled = true;
+                addBtn.textContent = `Max ${maxSignalsOfInterest} Signals`;
+            } else {
+                addBtn.disabled = false;
+                addBtn.textContent = '+ Add Signals';
+            }
+        }
+
+        function showSignalPicker() {
+            if (signalsOfInterest.length >= maxSignalsOfInterest) {
+                alert(`Maximum of ${maxSignalsOfInterest} signals already selected`);
+                return;
+            }
+
+            const modal = document.getElementById('signalPickerModal');
+            const pickerList = document.getElementById('signalPickerList');
+            
+            if (!signalFiles || signalFiles.length === 0) {
+                alert('No signal files loaded. Please load a directory or file first.');
+                return;
+            }
+            
+            // Populate the picker with available signals
+            pickerList.innerHTML = signalFiles.map((file, index) => {
+                const isAlreadySelected = signalsOfInterest.some(signal => signal.originalName === file.name);
+                const detectedType = getSignalTypeFromFile(file);
+                
+                return `
+                    <div class="signal-picker-item ${isAlreadySelected ? 'disabled' : ''}" 
+                         onclick="${isAlreadySelected ? '' : `toggleSignalSelection(${index})`}">
+                        <input type="checkbox" class="signal-picker-checkbox" 
+                               id="signal_${index}" 
+                               ${isAlreadySelected ? 'disabled' : ''}
+                               ${isAlreadySelected ? 'checked' : ''}>
+                        <div class="signal-picker-info">
+                            <div class="signal-picker-name">${file.name}</div>
+                            <div class="signal-picker-type">${detectedType.toUpperCase()} • ${isAlreadySelected ? 'Already Selected' : 'Available'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.style.display = 'flex';
+        }
+
+        function getSignalTypeFromFile(file) {
+            // Mock signal type detection based on filename or type
+            if (file.type === 'bids') {
+                const mockTypes = ['cardiac', 'respiratory', 'oxy', 'co2'];
+                return mockTypes[Math.floor(Math.random() * mockTypes.length)];
+            }
+            return file.type || 'unknown';
+        }
+
+        function toggleSignalSelection(index) {
+            const checkbox = document.getElementById(`signal_${index}`);
+            const item = checkbox.closest('.signal-picker-item');
+            
+            if (checkbox.disabled) return;
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        }
+
+        function addSelectedSignals() {
+            const checkboxes = document.querySelectorAll('.signal-picker-checkbox:checked:not(:disabled)');
+            const selectedIndexes = Array.from(checkboxes).map(cb => parseInt(cb.id.replace('signal_', '')));
+            
+            if (selectedIndexes.length === 0) {
+                alert('Please select at least one signal');
+                return;
+            }
+            
+            if (signalsOfInterest.length + selectedIndexes.length > maxSignalsOfInterest) {
+                alert(`Cannot add ${selectedIndexes.length} signals. Maximum is ${maxSignalsOfInterest} total.`);
+                return;
+            }
+            
+            selectedIndexes.forEach(index => {
+                const file = signalFiles[index];
+                const signalData = generateSignalDataFromFile(file);
+                
+                const signalOfInterest = {
+                    id: nextSignalId++,
+                    originalName: file.name,
+                    type: signalData.type,
+                    data: [...signalData.primary],
+                    zoomRange: { start: 0, end: signalData.primary.length - 1 },
+                    scrollOffset: 0,
+                    qaRating: null,
+                    zScore: signalData.zScore,
+                    quality: signalData.quality
+                };
+                
+                signalsOfInterest.push(signalOfInterest);
+            });
+            
+            updateSignalsList();
+            updateSignalsStack();
+            updateAddButton();
+            closeSignalPicker();
+        }
+
+        function generateSignalDataFromFile(file) {
+            // Generate signal data similar to generateSignalData but for a specific file
+            const detectedSignalType = getSignalTypeFromFile(file);
+            const numPoints = 2000;
+            let primaryData = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = i / 10;
+                let value;
+                
+                switch (detectedSignalType) {
+                    case 'cardiac':
+                        const heartRate = 1.2;
+                        const cardiacNoise = (Math.random() - 0.5) * 0.4;
+                        const cardiacBaseline = 0.3 * Math.sin(2 * Math.PI * 0.2 * time);
+                        value = 1.5 * Math.sin(2 * Math.PI * heartRate * time) + cardiacBaseline + cardiacNoise;
+                        break;
+                    case 'respiratory':
+                        const respirationFreq = 0.2;
+                        const respirationNoise = (Math.random() - 0.5) * 0.3;
+                        value = 2 * Math.sin(2 * Math.PI * respirationFreq * time) + respirationNoise;
+                        break;
+                    case 'oxy':
+                        const oxyNoise = (Math.random() - 0.5) * 0.2;
+                        value = 98 + 2 * Math.sin(2 * Math.PI * 0.1 * time) + oxyNoise;
+                        break;
+                    case 'co2':
+                        const co2Noise = (Math.random() - 0.5) * 0.3;
+                        value = 40 + 5 * Math.sin(2 * Math.PI * 0.15 * time) + co2Noise;
+                        break;
+                    default:
+                        value = Math.sin(2 * Math.PI * 0.5 * time) + (Math.random() - 0.5) * 0.3;
+                }
+                
+                primaryData.push(value);
+            }
+            
+            return {
+                primary: primaryData,
+                type: detectedSignalType,
+                zScore: (Math.random() - 0.5) * 4,
+                quality: Math.random() * 30 + 70
+            };
+        }
+
+        function closeSignalPicker() {
+            const modal = document.getElementById('signalPickerModal');
+            modal.style.display = 'none';
+            
+            // Clear selections
+            const checkboxes = document.querySelectorAll('.signal-picker-checkbox:not(:disabled)');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.closest('.signal-picker-item').classList.remove('selected');
+            });
+        }
+
+        function updateSignalsStack() {
+            const stackContainer = document.getElementById('signalsStack');
+            const statsSection = document.getElementById('signalStats');
+            if (!stackContainer) return;
+            
+            if (signalsOfInterest.length === 0) {
+                stackContainer.innerHTML = '<div style="color: #6c757d; font-style: italic; text-align: center; padding: 40px;">No signals of interest selected. Use the navigation above to browse signals and add them for annotation.</div>';
+                // Hide stats when no signals are displayed
+                if (statsSection) statsSection.style.display = 'none';
+                return;
+            }
+            
+            // Show stats when signals are displayed
+            if (statsSection) statsSection.style.display = 'block';
+            
+            stackContainer.innerHTML = signalsOfInterest.map(signal => `
+                <div class="signal-of-interest" id="signal_${signal.id}">
+                    <div class="signal-header">
+                        <div class="signal-title">${signal.originalName} - ${signal.type.toUpperCase()}</div>
+                        <div class="signal-qa-buttons">
+                            <button class="qa-button good ${signal.qaRating === 'good' ? 'selected' : ''}" 
+                                    onclick="setSignalQA(${signal.id}, 'good')">Good</button>
+                            <button class="qa-button fixable ${signal.qaRating === 'fixable' ? 'selected' : ''}" 
+                                    onclick="setSignalQA(${signal.id}, 'fixable')">Fixable</button>
+                            <button class="qa-button bad ${signal.qaRating === 'bad' ? 'selected' : ''}" 
+                                    onclick="setSignalQA(${signal.id}, 'bad')">Bad</button>
+                            <button class="qa-button uncertain ${signal.qaRating === 'uncertain' ? 'selected' : ''}" 
+                                    onclick="setSignalQA(${signal.id}, 'uncertain')">Uncertain</button>
+                        </div>
+                    </div>
+                    <div class="signal-chart-container">
+                        <div class="scrollable-chart">
+                            <canvas id="signalChart_${signal.id}" class="chart-canvas" style="height: 300px;"></canvas>
+                        </div>
+                        <div class="chart-scroll-controls">
+                            <button class="scroll-btn" onclick="scrollSignal(${signal.id}, 'left')">← Scroll Left</button>
+                            <button class="scroll-btn" onclick="scrollSignal(${signal.id}, 'right')">Scroll Right →</button>
+                            <button class="scroll-btn" onclick="resetSignalZoom(${signal.id})">Reset Zoom</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Initialize charts after DOM update
+            setTimeout(() => {
+                signalsOfInterest.forEach(signal => {
+                    initializeSignalChart(signal.id);
+                    drawSignalChart(signal.id);
+                });
+            }, 100);
+        }
+
+        function setSignalQA(signalId, rating) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            if (!signal) return;
+            
+            signal.qaRating = rating;
+            
+            // Update button states
+            const signalElement = document.getElementById(`signal_${signalId}`);
+            if (signalElement) {
+                const buttons = signalElement.querySelectorAll('.qa-button');
+                buttons.forEach(btn => btn.classList.remove('selected'));
+                
+                const selectedButton = signalElement.querySelector(`.qa-button.${rating}`);
+                if (selectedButton) {
+                    selectedButton.classList.add('selected');
+                }
+            }
+            
+            console.log(`Signal ${signal.originalName} QA set to: ${rating}`);
+        }
+
+        // Signal Chart Functions
+        function initializeSignalChart(signalId) {
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!canvas) return;
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+            
+            // Add event listeners for zooming and scrolling
+            setupSignalEventListeners(canvas, signalId);
+        }
+
+        function setupSignalEventListeners(canvas, signalId) {
+            canvas.addEventListener('mousedown', (e) => handleSignalMouseDown(e, signalId));
+            canvas.addEventListener('mousemove', (e) => handleSignalMouseMove(e, signalId));
+            canvas.addEventListener('mouseup', (e) => handleSignalMouseUp(e, signalId));
+            canvas.addEventListener('mouseleave', (e) => handleSignalMouseUp(e, signalId));
+            canvas.addEventListener('wheel', (e) => handleSignalWheel(e, signalId));
+            
+            // Window resize handler
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = 300;
+                drawSignalChart(signalId);
+            });
+        }
+
+        function drawSignalChart(signalId) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!signal || !canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const data = signal.data;
+            const zoomRange = signal.zoomRange;
+            
+            let color = '#007bff';
+            switch (signal.type) {
+                case 'respiration': color = '#e74c3c'; break;
+                case 'ppg': color = '#3498db'; break;
+                case 'ecg': color = '#9b59b6'; break;
+                case 'fmri': color = '#f39c12'; break;
+                default: color = '#007bff';
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const margin = 50;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+
+            // Draw grid
+            drawGrid(ctx, margin, chartWidth, chartHeight);
+
+            // Draw signal
+            drawSignal(ctx, data, color, margin, chartWidth, chartHeight, zoomRange);
+
+            // Draw axes
+            drawSignalAxes(ctx, canvas, margin, chartWidth, chartHeight, zoomRange, signal.type);
+        }
+
+        function drawSignalAxes(ctx, canvas, margin, chartWidth, chartHeight, zoomRange, signalType) {
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+
+            // Draw time labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+
+            const numLabels = 5;
+            for (let i = 0; i <= numLabels; i++) {
+                const x = margin + (i / numLabels) * chartWidth;
+                const timeValue = zoomRange.start + (i / numLabels) * (zoomRange.end - zoomRange.start);
+                const timeInSeconds = timeValue / 10;
+                ctx.fillText(timeInSeconds.toFixed(1) + 's', x, margin + chartHeight + 20);
+            }
+
+            // Y-axis label
+            ctx.save();
+            ctx.translate(20, margin + chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Z-Score', 0, 0);
+            ctx.restore();
+
+            // X-axis label
+            ctx.textAlign = 'center';
+            ctx.fillText('Time', margin + chartWidth / 2, canvas.height - 10);
+        }
+
+        // Signal Chart Event Handlers
+        function handleSignalMouseDown(e, signalId) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!signal || !canvas) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            
+            if (e.shiftKey) {
+                // Pan mode
+                isPanning[`signal_${signalId}`] = true;
+                panStart[`signal_${signalId}`] = { x, dataIndex: pixelToSignalDataIndex(x, signalId) };
+                canvas.style.cursor = 'grabbing';
+            } else {
+                // Zoom mode
+                isDragging[`signal_${signalId}`] = true;
+                dragStart[`signal_${signalId}`] = { x };
+                canvas.style.cursor = 'crosshair';
+            }
+        }
+
+        function handleSignalMouseMove(e, signalId) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!signal || !canvas) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            
+            if (isPanning[`signal_${signalId}`] && panStart[`signal_${signalId}`]) {
+                const currentDataIndex = pixelToSignalDataIndex(x, signalId);
+                const deltaIndex = panStart[`signal_${signalId}`].dataIndex - currentDataIndex;
+                
+                const rangeSize = signal.zoomRange.end - signal.zoomRange.start;
+                const newStart = Math.max(0, Math.min(timePoints.length - 1 - rangeSize, signal.zoomRange.start + deltaIndex));
+                const newEnd = newStart + rangeSize;
+                
+                signal.zoomRange.start = newStart;
+                signal.zoomRange.end = newEnd;
+                
+                drawSignalChart(signalId);
+                
+                // Update linked views if enabled
+                if (viewsLinked) {
+                    updateLinkedViews(signal.zoomRange);
+                }
+            } else if (isDragging[`signal_${signalId}`] && dragStart[`signal_${signalId}`]) {
+                drawSignalChart(signalId);
+                drawSignalZoomSelection(dragStart[`signal_${signalId}`].x, x, signalId);
+            }
+        }
+
+        function handleSignalMouseUp(e, signalId) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!signal || !canvas) return;
+            
+            if (isDragging[`signal_${signalId}`] && dragStart[`signal_${signalId}`]) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                
+                const startIndex = Math.min(pixelToSignalDataIndex(dragStart[`signal_${signalId}`].x, signalId), pixelToSignalDataIndex(x, signalId));
+                const endIndex = Math.max(pixelToSignalDataIndex(dragStart[`signal_${signalId}`].x, signalId), pixelToSignalDataIndex(x, signalId));
+                
+                if (Math.abs(x - dragStart[`signal_${signalId}`].x) > 10) {
+                    signal.zoomRange.start = Math.max(0, startIndex);
+                    signal.zoomRange.end = Math.min(timePoints.length - 1, endIndex);
+                    drawSignalChart(signalId);
+                    
+                    // Update linked views if enabled
+                    if (viewsLinked) {
+                        updateLinkedViews(signal.zoomRange);
+                    }
+                }
+            }
+
+            isDragging[`signal_${signalId}`] = false;
+            isPanning[`signal_${signalId}`] = false;
+            dragStart[`signal_${signalId}`] = null;
+            panStart[`signal_${signalId}`] = null;
+            canvas.style.cursor = 'grab';
+        }
+
+        function handleSignalWheel(e, signalId) {
+            e.preventDefault();
+            const scrollDirection = e.deltaX > 0 ? 'right' : 'left';
+            scrollSignal(signalId, scrollDirection, Math.abs(e.deltaX) * 0.5);
+        }
+
+        function scrollSignal(signalId, direction, amount = 50) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            if (!signal) return;
+            
+            const rangeSize = signal.zoomRange.end - signal.zoomRange.start;
+            const scrollAmount = amount;
+            
+            if (direction === 'left') {
+                const newStart = Math.max(0, signal.zoomRange.start - scrollAmount);
+                signal.zoomRange.start = newStart;
+                signal.zoomRange.end = newStart + rangeSize;
+            } else {
+                const newEnd = Math.min(timePoints.length - 1, signal.zoomRange.end + scrollAmount);
+                signal.zoomRange.end = newEnd;
+                signal.zoomRange.start = newEnd - rangeSize;
+            }
+            
+            drawSignalChart(signalId);
+            
+            // Update linked views if enabled
+            if (viewsLinked) {
+                updateLinkedViews(signal.zoomRange);
+            }
+        }
+
+        function resetSignalZoom(signalId) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            if (!signal) return;
+            
+            signal.zoomRange = { start: 0, end: timePoints.length - 1 };
+            drawSignalChart(signalId);
+            
+            // Update linked views if enabled
+            if (viewsLinked) {
+                updateLinkedViews(signal.zoomRange);
+            }
+        }
+
+        function pixelToSignalDataIndex(pixelX, signalId) {
+            const signal = signalsOfInterest.find(s => s.id === signalId);
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!signal || !canvas) return 0;
+            
+            const chartMargin = 50;
+            const chartWidth = canvas.width - 2 * chartMargin;
+            const ratio = (pixelX - chartMargin) / chartWidth;
+            const rangeSize = signal.zoomRange.end - signal.zoomRange.start;
+            return signal.zoomRange.start + ratio * rangeSize;
+        }
+
+        function drawSignalZoomSelection(startX, endX, signalId) {
+            const canvas = document.getElementById(`signalChart_${signalId}`);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = 'rgba(0, 123, 255, 0.2)';
+            ctx.fillRect(Math.min(startX, endX), 0, Math.abs(endX - startX), canvas.height);
+            
+            ctx.strokeStyle = 'rgba(0, 123, 255, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(Math.min(startX, endX), 0, Math.abs(endX - startX), canvas.height);
+            ctx.setLineDash([]);
+        }
+
+        // Primary Chart Functions
+        function initializePrimaryChart() {
+            primaryCanvas = document.getElementById('primaryChart');
+            if (!primaryCanvas) return;
+            
+            primaryCtx = primaryCanvas.getContext('2d');
+            primaryCanvas.width = primaryCanvas.offsetWidth;
+            primaryCanvas.height = primaryCanvas.offsetHeight;
+            setupEventListeners(primaryCanvas, 'primary');
+        }
+
+        function drawPrimaryChart() {
+            if (!primaryCanvas || !primaryCtx || !currentSignalData.primary) return;
+
+            const data = currentSignalData.primary;
+            const zoomRange = primaryZoomRange;
+            let color = '#007bff';
+            
+            // Set color based on signal type
+            switch (currentSignalData.type) {
+                case 'respiration': color = '#e74c3c'; break;
+                case 'ppg': color = '#3498db'; break;
+                case 'ecg': color = '#9b59b6'; break;
+                case 'fmri': color = '#f39c12'; break;
+                default: color = '#007bff';
+            }
+
+            primaryCtx.clearRect(0, 0, primaryCanvas.width, primaryCanvas.height);
+
+            const margin = 60;
+            const chartWidth = primaryCanvas.width - 2 * margin;
+            const chartHeight = primaryCanvas.height - 2 * margin;
+
+            // Draw background
+            primaryCtx.fillStyle = '#f8f9fa';
+            primaryCtx.fillRect(margin, margin, chartWidth, chartHeight);
+
+            // Draw grid
+            drawGrid(primaryCtx, margin, chartWidth, chartHeight);
+
+            // Draw signal
+            drawSignal(primaryCtx, data, color, margin, chartWidth, chartHeight, zoomRange);
+
+            // Draw axes
+            drawAxes(primaryCtx, primaryCanvas, margin, chartWidth, chartHeight, zoomRange);
+
+            // Draw legend
+            drawLegend(primaryCtx, margin, color, currentSignalData.type.toUpperCase());
+        }
+
+        function resetPrimaryZoom() {
+            primaryZoomRange = { start: 0, end: timePoints.length - 1 };
+            drawPrimaryChart();
+            
+            // If views are linked, reset auxiliary views too
+            if (viewsLinked) {
+                auxiliaryViews.forEach(view => {
+                    view.zoomRange = { ...primaryZoomRange };
+                    drawAuxiliaryChart(view.id);
+                });
+            }
+        }
+
+        // Auxiliary Views Management
+        function addAuxiliaryView() {
+            const selectElement = document.getElementById('auxiliarySignalSelect');
+            const signalType = selectElement.value;
+            
+            if (!signalType) return;
+            
+            // Check if this signal type is already added
+            if (auxiliaryViews.some(view => view.type === signalType)) {
+                alert(`${signalType.toUpperCase()} signal is already added as an auxiliary view`);
+                selectElement.value = '';
+                return;
+            }
+            
+            const viewId = nextAuxiliaryId++;
+            const auxView = {
+                id: viewId,
+                type: signalType,
+                data: generateAuxiliaryData(signalType),
+                zoomRange: { ...primaryZoomRange },
+                canvas: null,
+                ctx: null
+            };
+            
+            auxiliaryViews.push(auxView);
+            createAuxiliaryViewElement(auxView);
+            selectElement.value = '';
+            
+            // Update the signals list to show auxiliary signals
+            updateSignalsList();
+            
+            // Initialize chart after DOM element is created
+            setTimeout(() => {
+                initializeAuxiliaryChart(viewId);
+                drawAuxiliaryChart(viewId);
+            }, 100);
+        }
+
+        function generateAuxiliaryData(signalType) {
+            const numPoints = timePoints.length;
+            const data = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = timePoints[i];
+                let value;
+                
+                switch (signalType) {
+                    case 'respiration':
+                        const respirationFreq = 0.2;
+                        const respirationNoise = (Math.random() - 0.5) * 0.3;
+                        value = 2 * Math.sin(2 * Math.PI * respirationFreq * time) + respirationNoise;
+                        break;
+                    case 'ppg':
+                        const heartRate = 1.2;
+                        const ppgNoise = (Math.random() - 0.5) * 0.4;
+                        const ppgBaseline = 0.3 * Math.sin(2 * Math.PI * 0.2 * time);
+                        value = 1.5 * Math.sin(2 * Math.PI * heartRate * time) + ppgBaseline + ppgNoise;
+                        break;
+                    case 'ecg':
+                        const ecgRate = 1.2;
+                        const ecgNoise = (Math.random() - 0.5) * 0.2;
+                        value = 1.8 * Math.sin(2 * Math.PI * ecgRate * time) + ecgNoise;
+                        if (Math.sin(2 * Math.PI * ecgRate * time) > 0.9) {
+                            value += 2;
+                        }
+                        break;
+                    case 'fmri':
+                        const fmriNoise = (Math.random() - 0.5) * 0.5;
+                        value = 0.8 * Math.sin(2 * Math.PI * 0.1 * time) + fmriNoise;
+                        break;
+                    case 'motion':
+                        const motionNoise = (Math.random() - 0.5) * 0.6;
+                        value = 0.4 * Math.sin(2 * Math.PI * 0.05 * time) + motionNoise;
+                        break;
+                    default:
+                        value = Math.sin(2 * Math.PI * 0.5 * time) + (Math.random() - 0.5) * 0.3;
+                }
+                
+                data.push(value);
+            }
+            
+            return data;
+        }
+
+        function createAuxiliaryViewElement(auxView) {
+            const container = document.getElementById('auxiliaryViewsContainer');
+            const viewElement = document.createElement('div');
+            viewElement.className = 'auxiliary-view';
+            viewElement.id = `auxView_${auxView.id}`;
+            
+            viewElement.innerHTML = `
+                <h4>${auxView.type.toUpperCase()} Helper Signal</h4>
+                <canvas id="auxChart_${auxView.id}" width="300" height="150" style="width: 100%; height: 150px; border: 1px solid #e9ecef; border-radius: 3px;"></canvas>
+                <div class="auxiliary-controls">
+                    <button class="remove" onclick="removeAuxiliaryView(${auxView.id})">Remove</button>
+                </div>
+            `;
+            
+            container.appendChild(viewElement);
+        }
+
+        function initializeAuxiliaryChart(viewId) {
+            const auxView = auxiliaryViews.find(view => view.id === viewId);
+            if (!auxView) return;
+            
+            const canvas = document.getElementById(`auxChart_${viewId}`);
+            if (!canvas) return;
+            
+            auxView.canvas = canvas;
+            auxView.ctx = canvas.getContext('2d');
+            canvas.width = 800;  // Higher resolution width
+            canvas.height = 200;  // Higher resolution height
+            
+            // Add event listeners for auxiliary charts
+            setupAuxiliaryEventListeners(canvas, viewId);
+        }
+
+        function setupAuxiliaryEventListeners(canvas, viewId) {
+            // Auxiliary signals are view-only - no interactive events
+            // They automatically follow main signal zoom/pan
+            
+            // Only resize handler for canvas adjustment
+            window.addEventListener('resize', () => {
+                canvas.width = 800;  // Higher resolution width
+                canvas.height = 200;  // Higher resolution height
+                drawAuxiliaryChart(viewId);
+            });
+        }
+
+        function drawAuxiliaryChart(viewId) {
+            const auxView = auxiliaryViews.find(view => view.id === viewId);
+            if (!auxView || !auxView.canvas || !auxView.ctx) return;
+
+            const ctx = auxView.ctx;
+            const canvas = auxView.canvas;
+            const data = auxView.data;
+            const zoomRange = auxView.zoomRange;
+            
+            let color = '#28a745';
+            switch (auxView.type) {
+                case 'respiration': color = '#e74c3c'; break;
+                case 'ppg': color = '#3498db'; break;
+                case 'ecg': color = '#9b59b6'; break;
+                case 'fmri': color = '#f39c12'; break;
+                case 'motion': color = '#6c757d'; break;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const margin = 30;
+            const chartWidth = canvas.width - 2 * margin;
+            const chartHeight = canvas.height - 2 * margin;
+
+            // Draw background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin, margin, chartWidth, chartHeight);
+
+            // Draw grid
+            drawGrid(ctx, margin, chartWidth, chartHeight);
+
+            // Draw signal
+            drawSignal(ctx, data, color, margin, chartWidth, chartHeight, zoomRange);
+
+            // Draw axes with labels
+            drawAuxiliaryAxes(ctx, canvas, margin, chartWidth, chartHeight, zoomRange, auxView.type);
+        }
+
+        function drawAuxiliaryAxes(ctx, canvas, margin, chartWidth, chartHeight, zoomRange, signalType) {
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 1;
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, margin + chartHeight);
+            ctx.lineTo(margin + chartWidth, margin + chartHeight);
+            ctx.stroke();
+
+            // Draw time labels
+            ctx.fillStyle = '#495057';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+
+            const numLabels = 3;
+            for (let i = 0; i <= numLabels; i++) {
+                const x = margin + (i / numLabels) * chartWidth;
+                const timeValue = zoomRange.start + (i / numLabels) * (zoomRange.end - zoomRange.start);
+                const timeInSeconds = timeValue / 10;
+                ctx.fillText(timeInSeconds.toFixed(1) + 's', x, margin + chartHeight + 15);
+            }
+
+            // Signal type label
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(signalType.toUpperCase(), margin + 5, margin + 15);
+        }
+
+        // Auxiliary chart event handlers
+        function handleAuxiliaryMouseDown(e, viewId) {
+            // Auxiliary signals are view-only - no interaction allowed
+            return;
+            if (!viewsLinked) return; // Only handle events when views are linked
+            
+            const auxView = auxiliaryViews.find(view => view.id === viewId);
+            if (!auxView) return;
+            
+            const rect = auxView.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            
+            if (e.shiftKey) {
+                // Pan mode
+                isPanning[`aux_${viewId}`] = true;
+                panStart[`aux_${viewId}`] = { x, dataIndex: pixelToDataIndexAux(x, auxView) };
+                auxView.canvas.style.cursor = 'grabbing';
+            } else {
+                // Zoom mode
+                isDragging[`aux_${viewId}`] = true;
+                dragStart[`aux_${viewId}`] = { x };
+                auxView.canvas.style.cursor = 'crosshair';
+            }
+        }
+
+        function handleAuxiliaryMouseMove(e, viewId) {
+            // Auxiliary signals are view-only - no interaction allowed
+            return;
+            if (!viewsLinked) return;
+            
+            const auxView = auxiliaryViews.find(view => view.id === viewId);
+            if (!auxView) return;
+            
+            const rect = auxView.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            
+            if (isPanning[`aux_${viewId}`] && panStart[`aux_${viewId}`]) {
+                const currentDataIndex = pixelToDataIndexAux(x, auxView);
+                const deltaIndex = panStart[`aux_${viewId}`].dataIndex - currentDataIndex;
+                
+                const rangeSize = auxView.zoomRange.end - auxView.zoomRange.start;
+                const newStart = Math.max(0, Math.min(timePoints.length - 1 - rangeSize, auxView.zoomRange.start + deltaIndex));
+                const newEnd = newStart + rangeSize;
+                
+                // Update this auxiliary view
+                auxView.zoomRange.start = newStart;
+                auxView.zoomRange.end = newEnd;
+                
+                // Update primary view and other auxiliary views if linked
+                primaryZoomRange = { ...auxView.zoomRange };
+                auxiliaryViews.forEach(view => {
+                    if (view.id !== viewId) {
+                        view.zoomRange = { ...auxView.zoomRange };
+                        drawAuxiliaryChart(view.id);
+                    }
+                });
+                
+                drawAuxiliaryChart(viewId);
+                drawPrimaryChart();
+            }
+        }
+
+        function handleAuxiliaryMouseUp(e, viewId) {
+            // Auxiliary signals are view-only - no interaction allowed
+            return;
+            if (!viewsLinked) return;
+            
+            const auxView = auxiliaryViews.find(view => view.id === viewId);
+            if (!auxView) return;
+            
+            if (isDragging[`aux_${viewId}`] && dragStart[`aux_${viewId}`]) {
+                const rect = auxView.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                
+                const startIndex = Math.min(pixelToDataIndexAux(dragStart[`aux_${viewId}`].x, auxView), pixelToDataIndexAux(x, auxView));
+                const endIndex = Math.max(pixelToDataIndexAux(dragStart[`aux_${viewId}`].x, auxView), pixelToDataIndexAux(x, auxView));
+                
+                if (Math.abs(x - dragStart[`aux_${viewId}`].x) > 10) {
+                    // Update zoom ranges for all linked views
+                    const newRange = {
+                        start: Math.max(0, startIndex),
+                        end: Math.min(timePoints.length - 1, endIndex)
+                    };
+                    
+                    auxView.zoomRange = newRange;
+                    primaryZoomRange = { ...newRange };
+                    
+                    auxiliaryViews.forEach(view => {
+                        view.zoomRange = { ...newRange };
+                        drawAuxiliaryChart(view.id);
+                    });
+                    
+                    drawPrimaryChart();
+                }
+            }
+
+            isDragging[`aux_${viewId}`] = false;
+            isPanning[`aux_${viewId}`] = false;
+            dragStart[`aux_${viewId}`] = null;
+            panStart[`aux_${viewId}`] = null;
+            auxView.canvas.style.cursor = 'crosshair';
+        }
+
+        function pixelToDataIndexAux(pixelX, auxView) {
+            const chartMargin = 30;
+            const chartWidth = auxView.canvas.width - 2 * chartMargin;
+            const ratio = (pixelX - chartMargin) / chartWidth;
+            const rangeSize = auxView.zoomRange.end - auxView.zoomRange.start;
+            return auxView.zoomRange.start + ratio * rangeSize;
+            }
+
+        function resetAuxiliaryZoom(viewId) {
+            const auxView = auxiliaryViews.find(view => view.id === viewId);
+            if (!auxView) return;
+            
+            auxView.zoomRange = { start: 0, end: timePoints.length - 1 };
+            drawAuxiliaryChart(viewId);
+            
+            if (viewsLinked) {
+                primaryZoomRange = { ...auxView.zoomRange };
+                auxiliaryViews.forEach(view => {
+                    if (view.id !== viewId) {
+                        view.zoomRange = { ...auxView.zoomRange };
+                        drawAuxiliaryChart(view.id);
+                    }
+                });
+                drawPrimaryChart();
+            }
+        }
+
+        function removeAuxiliaryView(viewId) {
+            const viewElement = document.getElementById(`auxView_${viewId}`);
+            if (viewElement) {
+                viewElement.remove();
+            }
+            
+            auxiliaryViews = auxiliaryViews.filter(view => view.id !== viewId);
+            
+            // Update the signals list to reflect removal
+            updateSignalsList();
+        }
+
+        // Global View Linking Functions
+        function linkAllViews() {
+            viewsLinked = true;
+            document.getElementById('linkAllViewsBtn').style.display = 'none';
+            document.getElementById('unlinkAllViewsBtn').style.display = 'inline-block';
+            
+            // Get reference zoom range from first signal of interest, or default
+            let referenceRange = { start: 0, end: timePoints.length - 1 };
+            if (signalsOfInterest.length > 0) {
+                referenceRange = { ...signalsOfInterest[0].zoomRange };
+            }
+            
+            // Sync all signals of interest
+            signalsOfInterest.forEach(signal => {
+                signal.zoomRange = { ...referenceRange };
+                drawSignalChart(signal.id);
+            });
+            
+            // Sync auxiliary views
+            auxiliaryViews.forEach(view => {
+                view.zoomRange = { ...referenceRange };
+                drawAuxiliaryChart(view.id);
+            });
+            
+            console.log('All views linked - zoom and pan will be synchronized');
+        }
+
+        function unlinkAllViews() {
+            viewsLinked = false;
+            document.getElementById('linkAllViewsBtn').style.display = 'inline-block';
+            document.getElementById('unlinkAllViewsBtn').style.display = 'none';
+            
+            console.log('All views unlinked - each view can be controlled independently');
+        }
+
+        function resetAllZoom() {
+            const defaultRange = { start: 0, end: timePoints.length - 1 };
+            
+            // Reset all signals of interest
+            signalsOfInterest.forEach(signal => {
+                signal.zoomRange = { ...defaultRange };
+                drawSignalChart(signal.id);
+            });
+            
+            // Reset auxiliary views
+            auxiliaryViews.forEach(view => {
+                view.zoomRange = { ...defaultRange };
+                drawAuxiliaryChart(view.id);
+            });
+            
+            console.log('All views reset to full zoom');
+        }
+
+        function updateLinkedViews(newZoomRange) {
+            if (!viewsLinked) return;
+            
+            // Update all signals of interest
+            signalsOfInterest.forEach(signal => {
+                signal.zoomRange = { ...newZoomRange };
+                drawSignalChart(signal.id);
+            });
+            
+            // Update auxiliary views
+            auxiliaryViews.forEach(view => {
+                view.zoomRange = { ...newZoomRange };
+                drawAuxiliaryChart(view.id);
+            });
+        }
+
+        // Legacy view linking functions (for backward compatibility)
+        function linkViews() {
+            linkAllViews();
+        }
+
+        function unlinkViews() {
+            unlinkAllViews();
+        }
+
         // Statistical chart functions
         function generateParticipantData() {
             participantData = [];
@@ -870,8 +3167,6 @@
         }
 
         function initializeStatisticalCharts() {
-            drawMeanRespirationChart();
-            drawMeanPpgChart();
             drawQualityHistogram();
             drawScatterPlot();
         }
@@ -1418,6 +3713,106 @@
 
         function exportData(format) {
             alert(`Exporting data in ${format.toUpperCase()} format...`);
+        }
+
+        // QA Functions
+        function setRespirationQA(rating) {
+            respirationQA = rating;
+            
+            // Update button states
+            const buttons = document.querySelectorAll('.qa-buttons button');
+            buttons.forEach((btn, index) => {
+                if (index < 4) { // First 4 buttons are respiration QA
+                    btn.classList.remove('selected');
+                }
+            });
+            
+            const selectedButton = document.querySelector(`.qa-buttons button.${rating}`);
+            if (selectedButton && selectedButton.onclick.toString().includes('Respiration')) {
+                selectedButton.classList.add('selected');
+            }
+            
+            console.log(`Respiration QA set to: ${rating}`);
+        }
+
+        function setPpgQA(rating) {
+            ppgQA = rating;
+            
+            // Update button states for PPG (second set of QA buttons)
+            const ppgCards = document.querySelectorAll('.card');
+            let ppgCard = null;
+            ppgCards.forEach(card => {
+                if (card.querySelector('h3') && card.querySelector('h3').textContent.includes('PPG')) {
+                    ppgCard = card;
+                }
+            });
+            
+            if (ppgCard) {
+                const buttons = ppgCard.querySelectorAll('.qa-buttons button');
+                buttons.forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                const selectedButton = ppgCard.querySelector(`.qa-buttons button.${rating}`);
+                if (selectedButton) {
+                    selectedButton.classList.add('selected');
+                }
+            }
+            
+            console.log(`PPG QA set to: ${rating}`);
+        }
+
+        function saveComments() {
+            const comments = document.getElementById('qaComments').value;
+            
+            // In a real application, this would save to a database
+            localStorage.setItem('qaComments', comments);
+            localStorage.setItem('respirationQA', respirationQA || '');
+            localStorage.setItem('ppgQA', ppgQA || '');
+            
+            // Update the save status
+            const metaSpan = document.querySelector('.comment-meta span');
+            metaSpan.textContent = 'Saved at ' + new Date().toLocaleTimeString();
+            
+            console.log('Comments and QA ratings saved:', {
+                comments: comments,
+                respirationQA: respirationQA,
+                ppgQA: ppgQA
+            });
+        }
+
+        // Load saved data on page load
+        function loadSavedData() {
+            const savedComments = localStorage.getItem('qaComments');
+            const savedRespQA = localStorage.getItem('respirationQA');
+            const savedPpgQA = localStorage.getItem('ppgQA');
+            
+            if (savedComments) {
+                document.getElementById('qaComments').value = savedComments;
+            }
+            
+            if (savedRespQA && savedRespQA !== '') {
+                setRespirationQA(savedRespQA);
+            }
+            
+            if (savedPpgQA && savedPpgQA !== '') {
+                setPpgQA(savedPpgQA);
+            }
+        }
+
+        // Initialize auto-save for comments
+        function initializeAutoSave() {
+            const commentsTextarea = document.getElementById('qaComments');
+            if (commentsTextarea) {
+                commentsTextarea.addEventListener('input', function() {
+                    clearTimeout(window.autoSaveTimeout);
+                    window.autoSaveTimeout = setTimeout(() => {
+                        localStorage.setItem('qaComments', this.value);
+                        const metaSpan = document.querySelector('.comment-meta span');
+                        metaSpan.textContent = 'Auto-saved';
+                    }, 2000);
+                });
+            }
         }
     </script>
 </body>

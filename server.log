@@ -11,3 +11,9 @@
 127.0.0.1 - - [07/Aug/2025 11:39:39] "GET /dashboard.html HTTP/1.1" 200 -
 127.0.0.1 - - [07/Aug/2025 11:58:18] "GET /dashboard.html HTTP/1.1" 200 -
 127.0.0.1 - - [07/Aug/2025 11:59:21] "GET /dashboard.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 10:17:22] code 404, message File not found
+127.0.0.1 - - [11/Aug/2025 10:17:22] "GET / HTTP/1.1" 404 -
+127.0.0.1 - - [11/Aug/2025 10:17:22] code 404, message File not found
+127.0.0.1 - - [11/Aug/2025 10:17:22] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [11/Aug/2025 10:18:24] code 404, message File not found
+127.0.0.1 - - [11/Aug/2025 10:18:24] "GET / HTTP/1.1" 404 -
