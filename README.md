@@ -11,9 +11,6 @@ A web-based dashboard for analyzing physiological signals (respiration and PPG) 
 - **Real-time Stats**: Display z-score metrics and signal quality percentages
 
 ### Fix Tab (WIP)
-- **Signal Correction Tools**: Drift removal, bandpass filtering, artifact rejection
-- **Status Tracking**: Before/after comparison table showing applied corrections
-- **Quality Improvement**: Track z-score improvements after fixes
 
 ### Group Results Tab (WIP)
 

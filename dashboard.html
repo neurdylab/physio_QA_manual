@@ -34,6 +34,18 @@
         .header h1 {
             font-size: 28px;
             color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header-description {
+            color: #6c757d;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 800px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .tabs {
@@ -117,6 +129,184 @@
         .card p {
             color: #6c757d;
             line-height: 1.6;
+        }
+
+        /* Launch View Styles */
+        .launch-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .launch-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .launch-header h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 32px;
+        }
+
+        .launch-description {
+            color: #6c757d;
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .launch-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .launch-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .launch-card > p {
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .file-input-section {
+            margin-bottom: 30px;
+        }
+
+        .file-input-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .path-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .path-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .path-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .browse-btn {
+            padding: 12px 24px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .browse-btn:hover {
+            background: #5a6268;
+        }
+
+        .path-help {
+            color: #6c757d;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .dataset-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dataset-info h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .info-value {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 18px;
+        }
+
+        .launch-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .load-btn {
+            padding: 15px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .load-btn:hover:not(:disabled) {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .load-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .demo-btn {
+            padding: 15px 30px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
         }
 
         .stats-grid {
@@ -425,6 +615,13 @@
             gap: 15px;
             align-items: center;
             margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .directory-controls label {
+            font-weight: 600;
+            color: #495057;
+            white-space: nowrap;
         }
 
         .auxiliary-helper-controls {
@@ -1010,22 +1207,35 @@
     <div class="dashboard">
         <div class="header">
             <h1>Physiological Signal Analysis Dashboard</h1>
+            <p class="header-description">
+                This dashboard allows you to perform quality assessment (QA) on physiological signals 
+                collected during fMRI acquisitions. You can review respiration and PPG signals, 
+                rate their quality, apply corrections, and export results.
+            </p>
             <div class="global-controls">
                 <div class="directory-controls">
-                    <input type="text" id="directoryPath" class="directory-input" placeholder="/path/to/signal/directory" value="/data/physio_signals/">
-                    <input type="text" id="fileName" class="directory-input" placeholder="sub-01_ses-01_task-rest_physio.tsv" style="margin-left: 10px;">
-                    <button onclick="loadSignalDirectory()" class="directory-btn">Load Directory</button>
-                    <button onclick="loadSpecificFile()" class="directory-btn">Load File</button>
-                    <div class="directory-status" id="directoryStatus">No directory loaded</div>
+                    <label for="directoryPath">BIDS Dataset Path:</label>
+                    <input type="text" id="directoryPath" class="directory-input" placeholder="/path/to/your/bids/dataset" value="">
+                    <button onclick="browseBIDSFolder()" class="directory-btn">Browse</button>
+                    <button onclick="loadDataset()" class="directory-btn" id="load-dataset-btn" disabled>Load Dataset</button>
+                    <button onclick="loadDemoData()" class="directory-btn demo-btn">Load Demo Data</button>
+                    <div class="directory-status" id="directoryStatus">No dataset loaded - please specify BIDS dataset path</div>
+                    
+                    <div class="dataset-info" id="dataset-info" style="display: none; margin-top: 15px;">
+                        <strong>Dataset Info:</strong> 
+                        <span id="subject-count">0</span> subjects, 
+                        <span id="session-count">0</span> sessions, 
+                        <span id="physio-count">0</span> physio files
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="tabs">
+        <div class="tabs" id="main-tabs" style="display: none;">
             <div class="tab-nav">
-                <button class="tab-btn active" data-tab="manual-qa">Manual QA</button>
-                <button class="tab-btn" data-tab="fix">Fix</button>
-                <button class="tab-btn" data-tab="group-results">Group Results</button>
+                <button class="tab-btn active" data-tab="manual-qa" id="manual-qa-btn">Manual QA</button>
+                <button class="tab-btn" data-tab="fix" id="fix-btn">Fix</button>
+                <button class="tab-btn" data-tab="group-results" id="group-results-btn">Group Results</button>
                 <button class="tab-btn" data-tab="individual-report" id="individual-report-btn" style="display: none;">Individual Report</button>
             </div>
 
@@ -3814,6 +4024,75 @@ Correlation</div>
                 });
             }
         }
+
+        // Launch View Functions
+        function browseBIDSFolder() {
+            // In a real implementation, this would open a folder dialog
+            // For now, we'll simulate it
+            alert('In a real application, this would open a folder browser dialog. For demo purposes, please type the path manually.');
+            document.getElementById('directoryPath').focus();
+        }
+
+        function loadDataset() {
+            const path = document.getElementById('directoryPath').value.trim();
+            if (!path) {
+                alert('Please enter a BIDS dataset path');
+                return;
+            }
+
+            // Simulate dataset loading
+            document.getElementById('dataset-info').style.display = 'block';
+            document.getElementById('subject-count').textContent = '12';
+            document.getElementById('session-count').textContent = '24';
+            document.getElementById('physio-count').textContent = '48';
+
+            // Enable navigation to other tabs and load signal data
+            enableMainTabs();
+            
+            // Actually load the signal data using existing function
+            loadSignalDirectory();
+
+            // Notify user
+            setTimeout(() => {
+                alert('Dataset loaded successfully! You can now access the Manual QA tab to begin signal review.');
+            }, 1000);
+        }
+
+        function loadDemoData() {
+            // Simulate loading demo data
+            document.getElementById('directoryPath').value = '/demo/physio_qa_dataset/';
+            document.getElementById('dataset-info').style.display = 'block';
+            document.getElementById('subject-count').textContent = '5';
+            document.getElementById('session-count').textContent = '10';
+            document.getElementById('physio-count').textContent = '20';
+
+            // Enable navigation to other tabs
+            enableMainTabs();
+            
+            // Actually load the signal data using existing function
+            loadSignalDirectory();
+            
+            // Auto-navigate to Manual QA tab
+            setTimeout(() => {
+                switchTab('manual-qa');
+            }, 1000);
+        }
+
+        function enableMainTabs() {
+            document.getElementById('main-tabs').style.display = 'flex';
+        }
+
+        // Enable load button when path is entered
+        document.addEventListener('DOMContentLoaded', function() {
+            const pathInput = document.getElementById('directoryPath');
+            const loadBtn = document.getElementById('load-dataset-btn');
+
+            if (pathInput && loadBtn) {
+                pathInput.addEventListener('input', function() {
+                    loadBtn.disabled = this.value.trim() === '';
+                });
+            }
+        });
     </script>
 </body>
 </html>
