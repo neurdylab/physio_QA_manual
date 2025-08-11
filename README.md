@@ -10,16 +10,12 @@ A web-based dashboard for analyzing physiological signals (respiration and PPG) 
 - **Comments Section**: Record detailed QA notes with auto-save functionality
 - **Real-time Stats**: Display z-score metrics and signal quality percentages
 
-### Fix Tab
+### Fix Tab (WIP)
 - **Signal Correction Tools**: Drift removal, bandpass filtering, artifact rejection
 - **Status Tracking**: Before/after comparison table showing applied corrections
 - **Quality Improvement**: Track z-score improvements after fixes
 
-### Group Results Tab  
-- **Participant Statistics**: Overview of 24 participants with demographic data
-- **Interactive Scatter Plot**: Click points to view individual participant reports
-- **Signal Quality Distribution**: Histogram showing quality score distribution
-- **Export Functionality**: Download data in MATLAB, Python, or CSV formats
+### Group Results Tab (WIP)
 
 ## How to Run the Dashboard
 
@@ -27,7 +23,7 @@ A web-based dashboard for analyzing physiological signals (respiration and PPG) 
 
 **Direct file opening (`open dashboard.html`) will NOT work properly** due to browser security restrictions. Always use an HTTP server:
 
-### Method 1: Python HTTP Server (Recommended)
+### Python HTTP Server (Recommended)
 
 ```bash
 # Navigate to project directory
@@ -40,25 +36,6 @@ python3 -m http.server 8080
 # Local: http://localhost:8080/dashboard.html
 # Remote: http://[your-server-ip]:8080/dashboard.html
 ```
-
-### Method 2: Alternative Ports
-```bash
-# If port 8080 is busy, try different ports
-python3 -m http.server 8081
-python3 -m http.server 9000
-```
-
-### Method 3: Remote Access via SSH Tunnel
-```bash
-# On your local machine, create SSH tunnel
-ssh -L 8080:localhost:8080 user@your-server
-
-# Start server on remote machine
-python3 -m http.server 8080
-
-# Access locally: http://localhost:8080/dashboard.html
-```
-
 ## After Making Code Changes
 
 When you modify `dashboard.html`:
@@ -74,18 +51,7 @@ When you modify `dashboard.html`:
 
 **Dashboard shows blank page or doesn't load:**
 
-1. **Check server is running:**
-   ```bash
-   ps aux | grep http.server
-   ```
-
-2. **Verify port availability:**
-   ```bash
-   netstat -tulpn | grep :8080
-   curl -I http://localhost:8080/dashboard.html
-   ```
-
-3. **Kill old servers and restart:**
+1. **Kill old servers and restart:**
    ```bash
    # Find process ID
    ps aux | grep http.server
@@ -95,9 +61,7 @@ When you modify `dashboard.html`:
    python3 -m http.server 8080
    ```
 
-4. **Try different browser or incognito mode**
-
-5. **Check JavaScript console for errors** (Press F12)
+2. **Try different browser or incognito mode**
 
 ## Data Persistence
 
@@ -165,8 +129,7 @@ v1_mockup/
 
 ## Next Steps for Production
 
-1. **Backend Integration**: Replace localStorage with database
-2. **Real Data**: Connect to actual physiological signal processing pipeline  
-3. **Authentication**: Add user login and session management
-4. **Export Implementation**: Create actual file download endpoints
-5. **Performance**: Optimize for large datasets
+- [ ] Backend Integration**: Replace localStorage with database
+- [ ] Real Data**: Connect to actual physiological signal processing pipeline  
+- [ ] Export Implementation**: Create actual file download endpoints
+- [ ] Performance**: Optimize for large datasets
